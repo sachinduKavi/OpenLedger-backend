@@ -7,7 +7,8 @@ const { sendAuthMail } = require('../SystemEmail')
 const {UserModel, TempCodeModel} = require('../Model')
 
 
-
+// Validate the code send by the client/user 
+// Registration step 02
 const emailValidation = async (req, res) => {
     const vCode = req.body['code']
     const userEmail = req.body['userEmail']
@@ -20,7 +21,7 @@ const emailValidation = async (req, res) => {
     } else {
         validated = false
     }
-    res.status(validated?200:409).json({
+    res.status(200).json({
         email_validation: validated
     })
 }
@@ -51,7 +52,7 @@ const verificationCode = async (req, res) => {
     if(!(passCode && await sendAuthMail(req.body['userEmail'], randomCode))) passCode = false 
    
     // Respond to client device
-    res.status(passCode?200:409).json({
+    res.status(200).json({
         codeSent: passCode
     })
 }
@@ -89,7 +90,7 @@ const newUserRegistration = async (req, res) => {
     })
     
     // Response to client 
-    res.status(process_success?201:409).json({
+    res.status(201).json({
         process_success: process_success
     })
 }
