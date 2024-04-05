@@ -66,33 +66,46 @@ async function lastID(){
 
 // New User registration for system 
 // Password are converted to hash code before saving in the database 
+// New user registration step 03
 const newUserRegistration = async (req, res) => {
     let process_success = true
     console.log("New user registration ...")
 
-    // Converting newly created password to hash code 
-    const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
-    let idNum = await lastID()
-
-    await UserModel.insertMany(
-        {
-            userID: ++idNum,
-            userName: req.body['user_name'],
-            userEmail: req.body['user_email'],
-            passwordHash: hashPass,
-            profileLink: "await"
-        }
-    ).then(success => {
-        console.log("Registration Success...")
-    }).catch(err => {
-        console.log(err)
-        process_success = false
-    })
+    try{
+        
+        // Converting newly created password to hash code 
+        const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
+        let idNum = await lastID()
+        console.log('testing...')
+        await UserModel.insertMany(
+            {
+                userID: ++idNum,
+                userName: req.body['user_name'],
+                userEmail: req.body['user_email'],
+                passwordHash: hashPass,
+                userImageID: req.body['user_image_id'],
+                pictureScale: req.body['picture_scale']
+            }
+        ).then(success => {
+            console.log("Registration Success...")
+        }).catch(err => {
+            console.log(err)
+            process_success = false
+        })
+        
+        // Response to client 
+        res.status(process_success?201:200).json({
+            process_success: process_success
+        })
+    } catch(e) {
+        // Error occour during the process
+        res.status(200).json({
+            process_success: false,
+            message: e
+        })
+    }
     
-    // Response to client 
-    res.status(201).json({
-        process_success: process_success
-    })
+    
 }
 
 

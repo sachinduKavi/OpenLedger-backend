@@ -8,7 +8,7 @@ const { isAuthenticated } = require('../middleware/auth')
 
 
 
-router.post('/newUserRegistration', isAuthenticated ,newUserRegistration)
+router.post('/newUserRegistration' ,newUserRegistration)
 
 router.post('/verificationCode', verificationCode)
 

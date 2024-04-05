@@ -3,9 +3,10 @@ const mongoose = require('mongoose')
 const UserModel = mongoose.model('user_details', {
     userID: Number,
     userName: String,
-    email: String,
+    userEmail: String,
     passwordHash: String,
-    profileLink: String
+    userImageID: String,
+    pictureScale: {}
 }, 'user_details')
 
 
