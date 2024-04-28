@@ -1,0 +1,20 @@
+{
+  "name": "testing-api",
+  "version": "1.0.0",
+  "description": "this is only for testing pourpose ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "testing"
+  ],
+  "author": "sachindu kavishka",
+  "license": "ISC",
+  "dependencies": {
+    "http": "^0.0.1-security",
+    "nodemon": "^3.1.0"
+  }
+}
