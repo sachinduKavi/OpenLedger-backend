@@ -98,7 +98,7 @@ const newUserRegistration = async (req, res) => {
             process_success: process_success
         })
     } catch(e) {
-        // Error occour during the process
+        // Error occur during the process
         res.status(200).json({
             process_success: false,
             message: e
@@ -109,8 +109,49 @@ const newUserRegistration = async (req, res) => {
 }
 
 
+// Registration process ...
+// Final registration step
+const checkLogin = async (req, res) => {
+    console.log('user login')
+    // Initiate response variables
+    let errorMessage = null, validate = false, userDetails = null;
+
+    try{// Email and password
+        const userEmail = req.body['user_email'],
+                userPass = req.body['user_pass'];
+
+        // Fetch data from the database
+        const response = await UserModel.findOne({userEmail: userEmail})
+
+        // Check whether the email exists in the database
+        if(response != null) {
+            // Hash password compare
+            validate = await bcrypt.compare(userPass, response.passwordHash) // Compare the hash codes
+            if(validate) userDetails = {
+                userID: response.userID,
+                userName: response.userName,
+                userEmail: response.userEmail,
+                userImageID: response.userImageID,
+                pictureScale: response.pictureScale
+            }
+        } else {
+            errorMessage = 'invalidEmail'
+        }
+    } catch(e) {
+        errorMessage = 'severError'
+    }
+
+    res.status(200).json({
+        accountValidate: validate,
+        error: errorMessage,
+        userDetails: userDetails
+    })
+}
+
+
 module.exports = {
     emailValidation,
     newUserRegistration,
-    verificationCode
+    verificationCode,
+    checkLogin
 }
