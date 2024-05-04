@@ -3,15 +3,15 @@ const nodemailer = require('nodemailer')
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'skcode2001@gmail.com',
-        pass: 'kzoxkunktavwdrof'
+        user: 'openledgerofficial@gmail.com',
+        pass: 'mtnresvoiuzfsvqa'
     }
 })
 
 async function sendAuthMail(receiverEmail, randomCode = 4545) {
     const mailOptions = {
         from: 'skcode2001@gmail.com',
-        to: receiverEmail.toString(),
+        to: receiverEmail,
         subject: 'OTP Verification Code For OpenLedger',
         html: `<div style="width: 800px;height: 700px;box-shadow: -1px 0 10px #000000;">
         <div>

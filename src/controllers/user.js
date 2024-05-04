@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
+const conn = require('../SQL_Connection')
 const saltRounds = 6
-const mongoose = require('../mongoDB')
 
 const { sendAuthMail } = require('../SystemEmail')
 
@@ -21,9 +21,10 @@ const emailValidation = async (req, res) => {
     } else {
         validated = false
     }
-    res.status(200).json({
+
+    res.end(JSON.stringify({ // Reply for the code
         email_validation: validated
-    })
+    }))
 }
 
 // Generate random code for email verification ...
@@ -34,27 +35,24 @@ const verificationCode = async (req, res) => {
     console.log("Random Code : " + randomCode)
 
     // Delete previous codes sent to the same email address 
-    await TempCodeModel.deleteMany({"userEmail": req.body['userEmail']})
-
-    // Add temp code to the database
-    await TempCodeModel.insertMany({
-        userEmail: req.body['userEmail'],
-        code: randomCode,
-        date: Date.now
-    }).then(success => {
-        console.log("Temp code saved...")
-    }).catch(err => {
-        console.log(err)
-        passCode = false
+    await conn.query(`DELETE FROM temp_code WHERE user_email='${req.body['userEmail']}'`, (err, result) => {
+        if(err) passCode = false
+        else console.log('Deletion successful')
     })
 
-    // Sending code through email
+    // Inserted temp code to the database
+    await conn.query(`INSERT INTO temp_code VALUES ('${req.body['userEmail']}', '${randomCode}')`, (err, result) => {
+        if(err) passCode = false
+        else console.log('Data inserted to the temp_code')
+    })
+
+    // // Sending code through email
     if(!(passCode && await sendAuthMail(req.body['userEmail'], randomCode))) passCode = false 
    
-    // Respond to client device
-    res.status(200).json({
+    // // Respond to client device
+    res.end(JSON.stringify({
         codeSent: passCode
-    })
+    }))
 }
 
 
@@ -99,10 +97,10 @@ const newUserRegistration = async (req, res) => {
         })
     } catch(e) {
         // Error occur during the process
-        res.status(200).json({
+        res.end(JSON.stringify({
             process_success: false,
             message: e
-        })
+        }))
     }
     
     
@@ -141,11 +139,21 @@ const checkLogin = async (req, res) => {
         errorMessage = 'severError'
     }
 
-    res.status(200).json({
+    res.end(JSON.stringify({
         accountValidate: validate,
         error: errorMessage,
         userDetails: userDetails
-    })
+    }))
+}
+
+
+// Testing function DELETE 
+const testingFunction = async (req, res) => {
+    // userName = req.body['user_name']
+    console.log(req.body['user_name'])
+    res.end(JSON.stringify({
+    
+    }))
 }
 
 
@@ -153,5 +161,6 @@ module.exports = {
     emailValidation,
     newUserRegistration,
     verificationCode,
-    checkLogin
+    checkLogin,
+    testingFunction
 }
