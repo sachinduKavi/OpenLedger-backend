@@ -8,11 +8,17 @@ const userRouter = require('./src/routes/user')
 
 const PORT = 3000
 
-// Test connection with the mysql database 
-conn.connect((err) => {
-    if (err) throw err
-    console.log('MySql Database is connected...')
+
+conn.on('error', (err) => {
+    if(err) throw err
+    console.error('Database connection error:', err);
 })
+
+// Test connection with the mysql database 
+// conn.connect((err) => {
+//     if (err) throw err
+//     console.log('MySql Database is connected...')
+// })
 
 fleetApp.use('/user', userRouter)
 

@@ -10,21 +10,21 @@ const {UserModel, TempCodeModel} = require('../Model')
 // Validate the code send by the client/user 
 // Registration step 02
 const emailValidation = async (req, res) => {
+    console.log('Email validation')
     const vCode = req.body['code']
     const userEmail = req.body['userEmail']
-    const dbResponse = await TempCodeModel.findOne({"userEmail": userEmail}).sort({"_id": -1})
-    
-    let validated
-    console.log(dbResponse['code'] + " " + vCode) 
-    if (vCode === dbResponse['code']) {
-        validated = true
-    } else {
-        validated = false
-    }
+    console.log(await lastID('user')) // Temp code please remove 
+    // Fetch code from the database
+    await conn.query(`SELECT code FROM temp_code WHERE user_email='${userEmail}'`, await ((err, result, fields) => {
+        if(err) throw err
 
-    res.end(JSON.stringify({ // Reply for the code
-        email_validation: validated
+        const dbCode = result[0]['code']
+        res.end(JSON.stringify({ // Reply for the code
+            email_validation: vCode == dbCode
+        }))
+
     }))
+    
 }
 
 // Generate random code for email verification ...
@@ -48,18 +48,26 @@ const verificationCode = async (req, res) => {
 
     // // Sending code through email
     if(!(passCode && await sendAuthMail(req.body['userEmail'], randomCode))) passCode = false 
-   
+
     // // Respond to client device
     res.end(JSON.stringify({
         codeSent: passCode
     }))
 }
 
+// Creating new ID by incrementing the last ID
+function createUserID(lastIdentity){
+    const prefix = lastIdentity.slice(0, 2), numID = parseInt(lastIdentity.slice(2))+1
+    let newID = prefix
+    for(let i = 0; i < 8-numID.toString().length; i++) newID += "0"
+    newID += numID
+    return newID
+}
+
 
 // Find the last ID number use in the database
-async function lastID(){
-    const response = await UserModel.find({}, {"userID": 1}).sort({"userID": -1}).limit(1)
-    return response[0]['userID']
+async function lastID(tableName){
+    const result = conn.query('SELECT user_ID from user ORDER BY DESC',)
 }   
 
 // New User registration for system 
