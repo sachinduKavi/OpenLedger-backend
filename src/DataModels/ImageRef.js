@@ -7,9 +7,9 @@ class ImageRef {
     #scale = null
     #link = null
 
-    constructor() {
-        console.log('Creating new Image reference instant')
-    } 
+    // constructor() {
+    //     console.log('Creating new Image reference instant')
+    // } 
 
     constructor(imageID, xAxis, yAxis, scale, link) {
         console.log('Creating new Image instant with value assigned')

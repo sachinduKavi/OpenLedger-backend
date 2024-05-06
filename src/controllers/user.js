@@ -107,10 +107,22 @@ const newUserRegistration = async (req, res) => {
             imageScale['scale'],
             imageScale['link'],
         ) // New instant of the image reference (object)
-
         // Update image_reference table
         await imageRef.updateDatabase()
 
+        // Generating User ID
+        const newUserID = await getLastUserID()
+
+        // Creating new User Instant
+        const user = new User()
+        user.setAll(
+            newUserID,
+            req.body['user_name'],
+            hashPass,
+            req.body['user_email'],
+            pictureID
+        ) // Setting all the parameters of user instant
+        
         
 
         // Inserting to image reference table
