@@ -1,3 +1,4 @@
+const conn = require('../SQL_Connection')
 class User {
     #userID = null
     #userName = null
@@ -8,6 +9,12 @@ class User {
 
     constructor() {
         console.log('Creating new user instant')
+    }
+
+    // Update Database with current data
+    async updateDatabase() {
+        const [userResult] = await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES (?, ?, ?, ?, ?)',
+    [this.#userID, this.#userName, this.#userEmail, this.#passwordHash, this.#displayPictureID])
     }
 
     setUserID(userID) {
@@ -68,3 +75,5 @@ class User {
         this.setDisplayPictureID(displayPictureID)
     }
 }
+
+module.exports = User

@@ -89,8 +89,7 @@ const newUserRegistration = async (req, res) => {
     let process_success = true
     console.log("New user registration ...")
 
-    // try{
-        
+    try{
         // Converting newly created password to hash code 
         const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
         
@@ -108,7 +107,10 @@ const newUserRegistration = async (req, res) => {
             imageScale['link'],
         ) // New instant of the image reference (object)
         // Update image_reference table
-        await imageRef.updateDatabase()
+        await imageRef.updateDatabase().catch(err => {
+            process_success = false
+            console.log('Database error')
+        })
 
         // Generating User ID
         const newUserID = await getLastUserID()
@@ -122,44 +124,23 @@ const newUserRegistration = async (req, res) => {
             req.body['user_email'],
             pictureID
         ) // Setting all the parameters of user instant
-        
-        
-
-        // Inserting to image reference table
-        // const [imageResult] = await conn.promise().query('INSERT INTO image_ref ')
-
-
-        // await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES(?, ?, ?, ?, ?)',
-        // [await getLastUserID(), req.body['user_name'], req.body['user_email'], hashPass, req.body['user_image_id'], req.body]
-        //)
-        
-        // await UserModel.insertMany(
-        //     {
-        //         userID: ++idNum,
-        //         userName: req.body['user_name'],
-        //         userEmail: req.body['user_email'],
-        //         passwordHash: hashPass,
-        //         userImageID: req.body['user_image_id'],
-        //         pictureScale: req.body['picture_scale']
-        //     }
-        // ).then(success => {
-        //     console.log("Registration Success...")
-        // }).catch(err => {
-        //     console.log(err)
-        //     process_success = false
-        // })
+        // Update database with current values
+        user.updateDatabase().catch(err => {
+            process_success = false
+            console.log('Database error')
+        })
         
         // Response to client 
         res.end(JSON.stringify({
             process_success: process_success
         }))
-    // } catch(e) {
-    //     // Error occur during the process
-    //     res.end(JSON.stringify({
-    //         process_success: false,
-    //         message: e
-    //     }))
-    // }
+    } catch(e) {
+        // Error occur during the process
+        res.end(JSON.stringify({
+            process_success: false,
+            message: e
+        }))
+    }
     
     
 }
