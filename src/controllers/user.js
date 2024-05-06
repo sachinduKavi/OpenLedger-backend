@@ -91,8 +91,11 @@ const newUserRegistration = async (req, res) => {
         // Converting newly created password to hash code 
         const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
         
+        // Generating picture ID
+        const pictureID = await getLastPictureID()
 
-        const pictureID = 
+        // Inserting to image reference table
+        const [imageResult] = await conn.promise().query('INSERT INTO image_ref ')
 
 
         await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES(?, ?, ?, ?, ?)',
