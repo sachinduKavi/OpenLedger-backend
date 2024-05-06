@@ -26,6 +26,7 @@ const emailValidation = async (req, res) => {
 // Generate random code for email verification ...
 // Registration step 01
 const verificationCode = async (req, res) => {
+    console.log('Reg step 01')
     let passCode = true
     const randomCode = (Math.random()*10000 + 10000).toFixed(0).toString().substring(1)
     console.log("Random Code : " + randomCode)
@@ -40,7 +41,7 @@ const verificationCode = async (req, res) => {
         passCode = false
     })
 
-    // // Sending code through email
+    // Sending code through email
     if(!(passCode && await sendAuthMail(req.body['userEmail'], randomCode))) passCode = false 
 
     // // Respond to client device

@@ -11,6 +11,8 @@ class Fleet {
     async listen(PORT, func) {
         // Initiate the sever 
         this.server = http.createServer(await (async (req, res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*') // Adjust allowed methods if needed
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
             let count = 0
             for(let useCase of this.fleetBundle) {
                 //Outer loop that iterate with use case objects
@@ -28,9 +30,8 @@ class Fleet {
                             const request = {
                                 body: JSON.parse(dataBody)
                             }
-                            res.setHeader('Access-Control-Allow-Origin', '*')
-                            res.writeHead(200, {'Content-Type': 'application/json'})
                             
+                            res.writeHead(200, {'Content-Type': 'application/json'})
                             router.function(request, res) // Calling router function ...
                         })
 
