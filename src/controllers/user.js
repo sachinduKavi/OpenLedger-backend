@@ -2,6 +2,9 @@ const bcrypt = require('bcrypt')
 const conn = require('../SQL_Connection')
 const saltRounds = 6
 
+const User = require('../DataModels/User') // Importing User class
+const ImageRef = require('../DataModels/ImageRef') // Importing ImageRef class 
+
 const { sendAuthMail } = require('../SystemEmail')
 
 const {UserModel, TempCodeModel} = require('../Model')
@@ -86,15 +89,29 @@ const newUserRegistration = async (req, res) => {
     let process_success = true
     console.log("New user registration ...")
 
-    try{
+    // try{
         
         // Converting newly created password to hash code 
         const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
         
+        console.log('testing...')
         // Generating picture ID
         const pictureID = await getLastPictureID()
+        const imageScale = req.body['picture_scale']
+        
 
-        console.log(pictureID, req.body['picture_scale'])
+        const imageRef = new ImageRef(
+            pictureID,
+            imageScale['x_axis'],
+            imageScale['y_axis'],
+            imageScale['scale'],
+            imageScale['link'],
+        ) // New instant of the image reference (object)
+
+        // Update image_reference table
+        await imageRef.updateDatabase()
+
+        
 
         // Inserting to image reference table
         // const [imageResult] = await conn.promise().query('INSERT INTO image_ref ')
@@ -121,16 +138,16 @@ const newUserRegistration = async (req, res) => {
         // })
         
         // Response to client 
-        res.status(process_success?201:200).json({
-            process_success: process_success
-        })
-    } catch(e) {
-        // Error occur during the process
         res.end(JSON.stringify({
-            process_success: false,
-            message: e
+            process_success: process_success
         }))
-    }
+    // } catch(e) {
+    //     // Error occur during the process
+    //     res.end(JSON.stringify({
+    //         process_success: false,
+    //         message: e
+    //     }))
+    // }
     
     
 }

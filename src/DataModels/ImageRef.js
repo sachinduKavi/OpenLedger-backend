@@ -1,3 +1,5 @@
+const conn = require('../SQL_Connection')
+
 class ImageRef {
     #imageID = null
     #xAxis = null
@@ -8,6 +10,21 @@ class ImageRef {
     constructor() {
         console.log('Creating new Image reference instant')
     } 
+
+    constructor(imageID, xAxis, yAxis, scale, link) {
+        console.log('Creating new Image instant with value assigned')
+        this.#imageID = imageID
+        this.#xAxis = xAxis
+        this.#yAxis = yAxis
+        this.#scale = scale
+        this.#link = link
+    }
+
+    // Update the sql database with current values in the instant
+    async updateDatabase() {
+        const [imageResult] = await conn.promise().query('INSERT INTO image_ref(image_id, x_axis, y_axis, scale, link) VALUES(?, ?, ?, ?, ?)',
+    [this.#imageID, this.#xAxis, this.#yAxis, this.#scale, this.#link])
+    }
 
     setImageId(imageId) {
         this.#imageID = imageId
@@ -59,10 +76,10 @@ class ImageRef {
         ]
     }
 
-    setAll(imageId,xAxis,yAxis,scale,link) {
+    setAll(imageId, xAxis, yAxis, scale, link) {
         this.setImageId(imageId)
         this.setLink(link)
-        this.setScale(scal)
+        this.setScale(scale)
         this.setXaxis(xAxis)
         this.setYaxis(yAxis)
     }
