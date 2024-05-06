@@ -94,13 +94,15 @@ const newUserRegistration = async (req, res) => {
         // Generating picture ID
         const pictureID = await getLastPictureID()
 
+        console.log(pictureID, req.body['picture_scale'])
+
         // Inserting to image reference table
-        const [imageResult] = await conn.promise().query('INSERT INTO image_ref ')
+        // const [imageResult] = await conn.promise().query('INSERT INTO image_ref ')
 
 
-        await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES(?, ?, ?, ?, ?)',
-        [await getLastUserID(), req.body['user_name'], req.body['user_email'], hashPass, req.body['user_image_id'], req.body]
-        )
+        // await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES(?, ?, ?, ?, ?)',
+        // [await getLastUserID(), req.body['user_name'], req.body['user_email'], hashPass, req.body['user_image_id'], req.body]
+        //)
         
         // await UserModel.insertMany(
         //     {
