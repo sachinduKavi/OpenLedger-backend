@@ -5,7 +5,7 @@ const fleetApp = new Fleet() // Create instant of the fleet custom package
 const userRouter = require('./src/routes/user')
 
 
-const PORT = 3000
+const PORT = 3500
 
 
 // Test connection with the mysql database 

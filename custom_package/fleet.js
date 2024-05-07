@@ -1,4 +1,17 @@
 const http = require('http')
+const cors = require('cors')
+
+// const corsOptions = {
+//     origin: '*', // Replace with your React app's origin
+//     methods: 'GET, POST, PUT, DELETE', // Allowed methods
+//     allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
+// }
+
+const corsOptions = {
+    origin: 'http://localhost:3000',  // Replace with your React app origin
+    credentials: true, // If sending cookies
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'] // Adjust as needed
+  };
 
 class Fleet {
     constructor() {
@@ -10,14 +23,28 @@ class Fleet {
 
     async listen(PORT, func) {
         // Initiate the sever 
-        this.server = http.createServer(await (async (req, res) => {
-            res.setHeader('Access-Control-Allow-Origin', '*') // Adjust allowed methods if needed
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+        this.server = http.createServer((req, res) => {
+            console.log('Hello Create server')
+
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+            // Display cors error in the console if it dose not have access
+            if (req.method === 'OPTIONS') {
+                res.writeHead(200, corsOptions)
+                res.end()
+                return
+            }
+
+              
             let count = 0
             for(let useCase of this.fleetBundle) {
                 //Outer loop that iterate with use case objects
                 for(let router of useCase.router.routeBundle) {
                     // Inside loop that iterate with route objects
+                    // console.log(req.method, router.method)
+                    console.log(req.method, router.method)
                     if(req.url === `${useCase.usePath}${router.route}` && req.method === router.method) {
                         let dataBody = "" // Concatenate the req.body string
                         req.on('data', (chunk) => {
@@ -47,7 +74,7 @@ class Fleet {
                     break
                 }
             }
-        }))
+        })
 
         this.server.listen(PORT, () => func())
         
