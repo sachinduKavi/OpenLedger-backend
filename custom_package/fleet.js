@@ -17,8 +17,7 @@ class Fleet {
     async listen(PORT, func) {
         // Initiate the sever 
         this.server = http.createServer((req, res) => {
-            console.log('Hello Create server')
-
+            // Access control
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -36,8 +35,6 @@ class Fleet {
                 //Outer loop that iterate with use case objects
                 for(let router of useCase.router.routeBundle) {
                     // Inside loop that iterate with route objects
-                    // console.log(req.method, router.method)
-                    console.log(req.method, router.method)
                     if(req.url === `${useCase.usePath}${router.route}` && req.method === router.method) {
                         let dataBody = "" // Concatenate the req.body string
                         req.on('data', (chunk) => {

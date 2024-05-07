@@ -27,26 +27,37 @@ const emailValidation = async (req, res) => {
 // Registration step 01
 const verificationCode = async (req, res) => {
     console.log('Reg step 01')
-    let passCode = true
-    const randomCode = (Math.random()*10000 + 10000).toFixed(0).toString().substring(1)
-    console.log("Random Code : " + randomCode)
+    let passCode = true, errorMessage = null
 
-    // Delete previous codes sent to the same email address 
-    const [deleteResult] = await conn.promise().query('DELETE FROM temp_code WHERE user_email = ?', req.body['userEmail']).catch(err => {
+    // Check whether account already exists 
+    const [accountResult] = await conn.promise().query('SELECT user_ID FROM user WHERE user_email = ?', req.body['userEmail'])
+    if(accountResult.length == 0) {
+        // Account dose not exists in the database
+        const randomCode = (Math.random()*10000 + 10000).toFixed(0).toString().substring(1)
+        console.log("Random Code : " + randomCode)
+
+        // Delete previous codes sent to the same email address 
+        const [deleteResult] = await conn.promise().query('DELETE FROM temp_code WHERE user_email = ?', req.body['userEmail']).catch(err => {
+            passCode = false
+        })
+
+        // Inserted temp code to the database
+        const [insertResult] = await conn.promise().query('INSERT INTO temp_code VALUES (?, ?)', [req.body['userEmail'], randomCode]).catch(err => {
+            passCode = false
+        })
+
+        // Sending code through email
+        if(!(passCode && await sendAuthMail(req.body['userEmail'], randomCode))) passCode = false 
+    } else {
+        // Account is linked with the email address
         passCode = false
-    })
-
-    // Inserted temp code to the database
-    const [insertResult] = await conn.promise().query('INSERT INTO temp_code VALUES (?, ?)', [req.body['userEmail'], randomCode]).catch(err => {
-        passCode = false
-    })
-
-    // Sending code through email
-    if(!(passCode && await sendAuthMail(req.body['userEmail'], randomCode))) passCode = false 
+        errorMessage = "accountAlreadyExists"
+    }
 
     // // Respond to client device
     res.end(JSON.stringify({
-        codeSent: passCode
+        codeSent: passCode,
+        error: errorMessage
     }))
 }
 
@@ -191,7 +202,7 @@ const checkLogin = async (req, res) => {
 
 
 
-// Testing function DELETE 
+// Testing function Remove this code before going for the production
 const testingFunction = async (req, res) => {
     // Testing function to test the request send 
     console.log('Inside the testing class')
