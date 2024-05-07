@@ -1,11 +1,4 @@
 const http = require('http')
-const cors = require('cors')
-
-// const corsOptions = {
-//     origin: '*', // Replace with your React app's origin
-//     methods: 'GET, POST, PUT, DELETE', // Allowed methods
-//     allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
-// }
 
 const corsOptions = {
     origin: 'http://localhost:3000',  // Replace with your React app origin
