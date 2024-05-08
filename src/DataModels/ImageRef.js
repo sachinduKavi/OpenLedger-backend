@@ -7,17 +7,9 @@ class ImageRef {
     #scale = null
     #link = null
 
-    // constructor() {
-    //     console.log('Creating new Image reference instant')
-    // } 
 
-    constructor(imageID, xAxis, yAxis, scale, link) {
+    constructor() {
         console.log('Creating new Image instant with value assigned')
-        this.#imageID = imageID
-        this.#xAxis = xAxis
-        this.#yAxis = yAxis
-        this.#scale = scale
-        this.#link = link
     }
 
     // Update the sql database with current values in the instant

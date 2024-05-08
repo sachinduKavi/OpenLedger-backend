@@ -109,14 +109,14 @@ const newUserRegistration = async (req, res) => {
         const pictureID = await getLastPictureID()
         const imageScale = req.body['picture_scale']
         
-
-        const imageRef = new ImageRef(
+        const imageRef = new ImageRef() // New instant of the image reference (object)
+        imageRef.setAll(
             pictureID,
-            imageScale['x_axis'],
-            imageScale['y_axis'],
+            imageScale['x'],
+            imageScale['y'],
             imageScale['scale'],
-            imageScale['link'],
-        ) // New instant of the image reference (object)
+            req.body['dp_link'],
+        )
         // Update image_reference table
         await imageRef.updateDatabase().catch(err => {
             process_success = false
@@ -157,7 +157,7 @@ const newUserRegistration = async (req, res) => {
 }
 
 
-// Final registration step
+// Check login credentials and transfer user data
 // User login to the system
 const checkLogin = async (req, res) => {
     console.log('user login')
@@ -169,28 +169,35 @@ const checkLogin = async (req, res) => {
                 userPass = req.body['user_pass'];
 
         // Fetch data from the database
-        const [userResults] = await conn.promise().query('SELECT * FROM user INNER JOIN image_ref ON user.picture_id = image_ref.image_id WHERE user_email = ? LIMIT 1', userEmail)
-        console.log(userDetails)
+        if(errorMessage == null) {
+            const [userResults] = await conn.promise().query('SELECT * FROM user INNER JOIN image_ref ON user.display_picture = image_ref.image_id WHERE user.user_email = ? LIMIT 1', userEmail).catch(err => {
+                errorMessage = 'databaseError'
+            })
         // Check whether the email exists in the database
-        if(userResults.length != 0) {
-            // Compare hash codes 
-            validate = await bcrypt.compare(userPass, response.passwordHash) // Compare the hash codes
-            if(validate) {
-                userDetails = {
-                    userID: userResults[0]['user_ID'],
-                    userName: userResults[0]['user_ID'],
-                    userEmail: userResults[0]['user_ID'],
-                    userImageID: response.userImageID,
-                    pictureScale: response.pictureScale
+            if(userResults.length != 0) {
+                // Compare hash codes 
+                validate = await bcrypt.compare(userPass, userResults[0]['password_hash']) // Compare the hash codes
+                if(validate) {
+                    userDetails = {
+                        user_ID: userResults[0]['user_ID'],
+                        user_name: userResults[0]['user_name'],
+                        user_email: userResults[0]['user_email'],
+                        dp_link: userResults[0]['link'],
+                        picture_scale: {
+                            x: userResults[0]['x_axis'],
+                            y: userResults[0]['y_axis'],
+                            scale: userResults[0]['scale']
+                        }
+                    }
+                    validate = true
                 }
-                validate = true
+                
+          
+
+
+            } else {
+                errorMessage = 'invalidEmail'
             }
-            else errorMessage = 'invalidPass' // Invalid password
-0        
-
-
-        } else {
-            errorMessage = 'invalidEmail'
         }
     // } catch(e) {
     //     errorMessage = 'severError'
