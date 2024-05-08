@@ -62,7 +62,7 @@ const verificationCode = async (req, res) => {
 }
 
 // Creating new ID by incrementing the last ID
-function createUserID(lastIdentity){
+function createUserID(lastIdentity) {
     const prefix = lastIdentity.slice(0, 2), numID = parseInt(lastIdentity.slice(2))+1
     let newID = prefix
     for(let i = 0; i < 8-numID.toString().length; i++) newID += "0"
@@ -73,7 +73,7 @@ function createUserID(lastIdentity){
 
 
 // Find the last ID number use in the database
-async function getLastUserID(){
+async function getLastUserID() {
     const [userID] = await conn.promise().query('SELECT user_ID FROM user ORDER BY user_ID DESC LIMIT 1').catch(err => {
         throw err
     })
@@ -105,7 +105,6 @@ const newUserRegistration = async (req, res) => {
         // Converting newly created password to hash code 
         const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
         
-        console.log('testing...')
         // Generating picture ID
         const pictureID = await getLastPictureID()
         const imageScale = req.body['picture_scale']
@@ -158,37 +157,44 @@ const newUserRegistration = async (req, res) => {
 }
 
 
-// Registration process ...
 // Final registration step
+// User login to the system
 const checkLogin = async (req, res) => {
     console.log('user login')
     // Initiate response variables
     let errorMessage = null, validate = false, userDetails = null;
 
-    try{// Email and password
+    // try{// Email and password
         const userEmail = req.body['user_email'],
                 userPass = req.body['user_pass'];
 
         // Fetch data from the database
-        const response = await UserModel.findOne({userEmail: userEmail})
-
+        const [userResults] = await conn.promise().query('SELECT * FROM user INNER JOIN image_ref ON user.picture_id = image_ref.image_id WHERE user_email = ? LIMIT 1', userEmail)
+        console.log(userDetails)
         // Check whether the email exists in the database
-        if(response != null) {
-            // Hash password compare
+        if(userResults.length != 0) {
+            // Compare hash codes 
             validate = await bcrypt.compare(userPass, response.passwordHash) // Compare the hash codes
-            if(validate) userDetails = {
-                userID: response.userID,
-                userName: response.userName,
-                userEmail: response.userEmail,
-                userImageID: response.userImageID,
-                pictureScale: response.pictureScale
+            if(validate) {
+                userDetails = {
+                    userID: userResults[0]['user_ID'],
+                    userName: userResults[0]['user_ID'],
+                    userEmail: userResults[0]['user_ID'],
+                    userImageID: response.userImageID,
+                    pictureScale: response.pictureScale
+                }
+                validate = true
             }
+            else errorMessage = 'invalidPass' // Invalid password
+0        
+
+
         } else {
             errorMessage = 'invalidEmail'
         }
-    } catch(e) {
-        errorMessage = 'severError'
-    }
+    // } catch(e) {
+    //     errorMessage = 'severError'
+    // }
 
     res.end(JSON.stringify({
         accountValidate: validate,
