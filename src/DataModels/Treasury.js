@@ -16,7 +16,7 @@ class Treasury {
     }
 
     getTreasuryID() {
-        return this.#treasuryID
+        return this.#treasuryID c
     }
 
     getTreasuryName() {
