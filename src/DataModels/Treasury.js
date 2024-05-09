@@ -19,39 +19,39 @@ class Treasury {
         return this.#treasuryID
     }
 
-    getTreasuryName(){
+    getTreasuryName() {
         return this.#treasuryName
     }
 
-    getDescription(){
+    getDescription() {
         return this.#description
     }
 
-    getMemberLimit(){
+    getMemberLimit() {
         return this.#memberLimit
     }
 
-    getCoverImageID(){
+    getCoverImageID() {
         return this.#coverImageID
     }
 
-    getTreasuryLink(){
+    getTreasuryLink() {
         return this.#treasuryLink
     }
 
-    getQrImageID(){
+    getQrImageID() {
         return this.#qrImageID
     }
 
-    getGlobalVisibility(){
+    getGlobalVisibility() {
         return this.#globalVisibility
     }
 
-    getPublic(){
+    getPublic() {
         return this.#public
     }
 
-    getOwnerID(){
+    getOwnerID() {
         return this.#ownerID
     }
 
@@ -61,39 +61,39 @@ class Treasury {
         this.#treasuryID = treasuryID
     }
 
-    setTreasuryName(treasuryName){
+    setTreasuryName(treasuryName) {
         this.#treasuryName = treasuryName
     }
 
-    setTreasuryName(description){
+    setTreasuryName(description) {
         this.#description = description
     }
 
-    setTreasuryName(memberLimit){
+    setTreasuryName(memberLimit) {
         this.#memberLimit = memberLimit
     }
 
-    setTreasuryName(coverImageID){
+    setTreasuryName(coverImageID) {
         this.#coverImageID = coverImageID
     }
 
-    setTreasuryName(treasuryLink){
+    setTreasuryName(treasuryLink) {
         this.#treasuryLink = treasuryLink
     }
 
-    setTreasuryName(qrImageID){
+    setTreasuryName(qrImageID) {
         this.#qrImageID = qrImageID
     }
 
-    setTreasuryName(globalVisibility){
+    setTreasuryName(globalVisibility) {
         this.#globalVisibility = globalVisibility
     }
 
-    setTreasuryName(public){
+    setTreasuryName(public) {
         this.#public = public
     }
 
-    setTreasuryName(ownerID){
+    setTreasuryName(ownerID) {
         this.#ownerID = ownerID
     }
 
@@ -108,10 +108,10 @@ class Treasury {
             this.getQrImageID(),
             this.getGlobalVisibility(),
             this.getPublic(),
-            this.getOwnerID(),
+            this.getOwnerID()
         ]
     }
-    setAll(treasuryID, treasuryName, description, memberLimit,coverImageID, treasuryLink, qrImageID,globalVisibility, public,ownerID){
+    setAll(treasuryID, treasuryName, description, memberLimit, coverImageID, treasuryLink, qrImageID, globalVisibility, public, ownerID) {
         this.setTreasuryID(treasuryID)
         this.setTreasuryName(treasuryName)
         this.setDescription(description)
