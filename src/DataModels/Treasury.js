@@ -55,8 +55,6 @@ class Treasury {
         return this.#ownerID
     }
 
-
-
     setTreasuryID(treasuryID) {
         this.#treasuryID = treasuryID
     }
