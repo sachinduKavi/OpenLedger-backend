@@ -8,11 +8,24 @@ class Treasury {
     #treasuryLink
     #qrImageID
     #globalVisibility
-    #public
+    #publicTreasury
     #ownerID
 
+    // Creating new instant with values 01
+    constructor({treasuryID = null, treasuryName = null, description = null, memberLimit = null, coverImageID = null, treasuryLink = null, publicTreasury = null, ownerID = null}) {
+        console.log('Creating Treasury instant with values')
+        this.#treasuryID = treasuryID
+        this.#treasuryName = treasuryName
+        this.#description = description
+        this.#memberLimit = memberLimit
+        this.#coverImageID = coverImageID
+        this.#treasuryLink = treasuryLink
+        this.#publicTreasury = publicTreasury
+        this.#ownerID = ownerID
+    }
+
     constructor() {
-        console.log('Creating new Treasury instant...')
+        console.log('Creating Treasury instant...')
     }
 
     getTreasuryID() {
@@ -48,7 +61,7 @@ class Treasury {
     }
 
     getPublic() {
-        return this.#public
+        return this.#publicTreasury
     }
 
     getOwnerID() {
@@ -87,8 +100,8 @@ class Treasury {
         this.#globalVisibility = globalVisibility
     }
 
-    setTreasuryName(public) {
-        this.#public = public
+    setTreasuryName(publicTreasury) {
+        this.#publicTreasury = publicTreasury
     }
 
     setTreasuryName(ownerID) {
