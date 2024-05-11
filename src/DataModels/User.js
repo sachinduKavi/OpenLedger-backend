@@ -1,14 +1,17 @@
 const conn = require('../SQL_Connection')
 class User {
-    #userID = null
-    #userName = null
-    #userEmail = null
-    #passwordHash = null
-    #displayPictureID = null
+    #userID 
+    #userName 
+    #userEmail 
+    #passwordHash 
+    #displayPictureID 
 
-
-    constructor() {
-        console.log('Creating new user instant')
+    constructor({userID = null,userName = null,userEmail = null,passwordHash = null,displayPictureID = null}) {
+        this.#userID = userID
+        this.#userName = userName
+        this.userEmail = userEmail
+        this.#passwordHash = passwordHash
+        this.displayPictureID = displayPictureID
     }
 
     // Update Database with current data
