@@ -24,12 +24,14 @@ class Treasury {
         this.#ownerID = ownerID
     }
 
-    constructor() {
-        console.log('Creating Treasury instant...')
-    }
 
     getTreasuryID() {
+        console.log('No value')
         return this.#treasuryID
+    }
+
+    getTreasuryID(some) {
+        console.log('value', some)
     }
 
     getTreasuryName() {
@@ -76,35 +78,35 @@ class Treasury {
         this.#treasuryName = treasuryName
     }
 
-    setTreasuryName(description) {
+    setDescription(description) {
         this.#description = description
     }
 
-    setTreasuryName(memberLimit) {
+    setMemberLimit(memberLimit) {
         this.#memberLimit = memberLimit
     }
 
-    setTreasuryName(coverImageID) {
+    setCoverImageID(coverImageID) {
         this.#coverImageID = coverImageID
     }
 
-    setTreasuryName(treasuryLink) {
+    setTreasuryLink(treasuryLink) {
         this.#treasuryLink = treasuryLink
     }
 
-    setTreasuryName(qrImageID) {
+    setQrImageID(qrImageID) {
         this.#qrImageID = qrImageID
     }
 
-    setTreasuryName(globalVisibility) {
+    setGlobalVisibility(globalVisibility) {
         this.#globalVisibility = globalVisibility
     }
 
-    setTreasuryName(publicTreasury) {
+    setPublicTreasury(publicTreasury) {
         this.#publicTreasury = publicTreasury
     }
 
-    setTreasuryName(ownerID) {
+    setOwnerID(ownerID) {
         this.#ownerID = ownerID
     }
 
@@ -122,7 +124,7 @@ class Treasury {
             this.getOwnerID()
         ]
     }
-    setAll(treasuryID, treasuryName, description, memberLimit, coverImageID, treasuryLink, qrImageID, globalVisibility, public, ownerID) {
+    setAll(treasuryID, treasuryName, description, memberLimit, coverImageID, treasuryLink, qrImageID, globalVisibility, publicTreasury, ownerID) {
         this.setTreasuryID(treasuryID)
         this.setTreasuryName(treasuryName)
         this.setDescription(description)
@@ -131,7 +133,7 @@ class Treasury {
         this.setTreasuryLink(treasuryLink)
         this.setQrImageID(qrImageID)
         this.setGlobalVisibility(globalVisibility)
-        this.setPublic(public)
+        this.setPublicTreasury(publicTreasury)
         this.setOwnerID(ownerID)
     }
 

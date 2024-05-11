@@ -1,3 +1,5 @@
+const conn = require('../SQL_Connection')
+
 // Creating new ID by incrementing the last ID
 function generateID(lastIdentity) {
     const prefix = lastIdentity.slice(0, 2), numID = parseInt(lastIdentity.slice(2))+1
