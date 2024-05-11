@@ -1,6 +1,7 @@
 const conn = require('../SQL_Connection')
 
 class ImageRef {
+    // Private variables
     #imageID = null
     #xAxis = null
     #yAxis = null
@@ -8,7 +9,7 @@ class ImageRef {
     #link = null
 
 
-    constructor() {
+    constructor({imageID = null, }) {
         console.log('Creating new Image instant with value assigned')
     }
 
