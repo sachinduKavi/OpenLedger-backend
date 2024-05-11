@@ -11,6 +11,18 @@ function generateID(lastIdentity) {
 }
 
 
+// Find the last image ID in the database
+async function getLastPictureID() {
+    const [imageID] = await conn.promise().query('SELECT image_id FROM image_ref ORDER BY image_id DESC LIMIT 1').catch(err => {
+        throw err
+    })
+
+    return (imageID.length == 0)
+        ? generateID('IR00')
+        : generateID(imageID[0]['image_id'])
+}
+
+
 // Get the last used treasury ID
 const getLastTreasuryID = async  () => {
     const [userID] = await conn.promise().query('SELECT treasury_ID FROM treasury ORDER BY treasury_ID DESC LIMIT 1').catch(err => {
@@ -22,5 +34,6 @@ const getLastTreasuryID = async  () => {
 }
 
 module.exports = {
-    getLastTreasuryID
+    getLastTreasuryID,
+    getLastPictureID
 }

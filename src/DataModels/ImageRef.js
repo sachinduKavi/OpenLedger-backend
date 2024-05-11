@@ -14,12 +14,12 @@ class ImageRef {
         this.#xAxis = xAxis
         this.#yAxis = yAxis
         this.#scale = scale
-        this.link = link
+        this.#link = link
     }
 
     // Update the sql database with current values in the instant
     async updateDatabase() {
-        const [imageResult] = await conn.promise().query('INSERT INTO image_ref(image_id, x_axis, y_axis, scale, link) VALUES(?, ?, ?, ?, ?)',
+        const [imageResult] = await conn.promise().query('INSERT INTO image_ref (image_id, x_axis, y_axis, scale, link) VALUES(?, ?, ?, ?, ?)',
     [this.#imageID, this.#xAxis, this.#yAxis, this.#scale, this.#link])
     }
 

@@ -1,3 +1,5 @@
+const conn = require('../SQL_Connection')
+
 class Treasury {
     // Private Treasury variables
     #treasuryID
@@ -9,6 +11,7 @@ class Treasury {
     #globalVisibility
     #publicTreasury
     #ownerID
+
     // Creating new instant with values 01
     constructor({treasuryID = null, treasuryName = null, description = null, memberLimit = null, coverImageID = null, treasuryLink = null, publicTreasury = null, ownerID = null, globalVisibility = null}) {
         console.log('Creating Treasury instant with values')
@@ -23,14 +26,15 @@ class Treasury {
         this.#globalVisibility = globalVisibility
     }
 
+    async updateDatabase() {
+        // Update sql database with all the current values
+        return conn.promise().query(`INSERT INTO treasury (treasury_ID, treasury_name, description, member_limit, cover_img, treasury_link, global_visibility, public_group, owner_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [this.#treasuryID, this.#treasuryName, this.#description, this.#memberLimit, this.#coverImageID, this.#treasuryLink, this.#globalVisibility, this.#publicTreasury, this.#ownerID])
+    }
 
     getTreasuryID() {
         console.log('No value')
         return this.#treasuryID
-    }
-
-    getTreasuryID(some) {
-        console.log('value', some)
     }
 
     getTreasuryName() {
@@ -51,10 +55,6 @@ class Treasury {
 
     getTreasuryLink() {
         return this.#treasuryLink
-    }
-
-    getQrImageID() {
-        return this.#qrImageID
     }
 
     getGlobalVisibility() {
@@ -91,10 +91,6 @@ class Treasury {
 
     setTreasuryLink(treasuryLink) {
         this.#treasuryLink = treasuryLink
-    }
-
-    setQrImageID(qrImageID) {
-        this.#qrImageID = qrImageID
     }
 
     setGlobalVisibility(globalVisibility) {

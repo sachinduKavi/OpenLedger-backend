@@ -6,7 +6,7 @@ class User {
     #passwordHash 
     #displayPictureID 
 
-    constructor({userID = null,userName = null,userEmail = null,passwordHash = null,displayPictureID = null}) {
+    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null}) {
         this.#userID = userID
         this.#userName = userName
         this.userEmail = userEmail
