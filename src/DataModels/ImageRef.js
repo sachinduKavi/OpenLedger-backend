@@ -2,15 +2,19 @@ const conn = require('../SQL_Connection')
 
 class ImageRef {
     // Private variables
-    #imageID = null
-    #xAxis = null
-    #yAxis = null
-    #scale = null
-    #link = null
+    #imageID
+    #xAxis 
+    #yAxis 
+    #scale  
+    #link 
 
 
-    constructor({imageID = null, }) {
-        console.log('Creating new Image instant with value assigned')
+    constructor({imageID = null, xAxis = null, yAxis = null, scale = null , link = null }) {
+        this.#imageID = imageID
+        this.#xAxis = xAxis
+        this.#yAxis = yAxis
+        this.#scale = scale
+        this.link = link
     }
 
     // Update the sql database with current values in the instant
