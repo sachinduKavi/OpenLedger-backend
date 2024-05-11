@@ -27,9 +27,13 @@ class Treasury {
     }
 
     async updateDatabase() {
-        // Update sql database with all the current values
-        return conn.promise().query(`INSERT INTO treasury (treasury_ID, treasury_name, description, member_limit, cover_img, treasury_link, global_visibility, public_group, owner_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [this.#treasuryID, this.#treasuryName, this.#description, this.#memberLimit, this.#coverImageID, this.#treasuryLink, this.#globalVisibility, this.#publicTreasury, this.#ownerID])
+        // Update treasury database with all the current values
+        await conn.promise().query(`INSERT INTO treasury (treasury_ID, treasury_name, description, member_limit, cover_img, treasury_link, global_visibility, public_group) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [this.#treasuryID, this.#treasuryName, this.#description, this.#memberLimit, this.#coverImageID, this.#treasuryLink, this.#globalVisibility, this.#publicTreasury, this.#ownerID])
+
+        // Create treasury owner 
+        await conn.promise().query(`INSERT INTO treasury_participants (treasury_ID, user_ID, role) VALUES (?, ?, ?)`,
+        [this.#treasuryID, this.#ownerID, 'Treasurer'])
     }
 
     getTreasuryID() {

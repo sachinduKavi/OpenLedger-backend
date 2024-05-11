@@ -16,8 +16,7 @@ const createTreasury = async (req, res) => {
     // Creating new Image reference instant
     const treasuryImage = new ImageRef({
         imageID: pictureID,
-        link: req.body['cover_image_link']
-    })
+        link: req.body['cover_image_link']})
   
     // Update Image Database
     await treasuryImage.updateDatabase().catch(err => {
@@ -48,6 +47,7 @@ const createTreasury = async (req, res) => {
         console.log('Treasury creation fail')
         creationProcess = false
         errorMessage = 'ServerError'
+        throw err
     })
     
 
