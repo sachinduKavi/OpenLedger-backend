@@ -61,16 +61,21 @@ const createTreasury = async (req, res) => {
 
 
 // Get Participant treasury details
-const getParticipantTreasury = (req, res) => {
+const getParticipantTreasury = async (req, res) => {
     console.log('Get Participants...')
-
-    // Creating new treasury instant 
-    const treasury = new Treasury({})
-
-    fetchTreasuryParticipants(req.body['user_ID'])
+    let getProcess = true, errorMessage = null
+    // Creating new treasury instants array
+    const treasuryArray = await fetchTreasuryParticipants(req.body['user_ID']).catch(err => {
+        getProcess = false
+        errorMessage = 'databaseFetchError'
+    })
 
     res.end(JSON.stringify({
-        body:req.body
+        process: getProcess,
+        error: errorMessage,
+        content: treasuryArray.forEach(element => {
+            treasury_ID: element.treasuryID
+        })
     }))
 }
 

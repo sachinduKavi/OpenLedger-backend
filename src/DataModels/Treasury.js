@@ -23,7 +23,7 @@ class Treasury {
         this.#description = description
         this.#memberLimit = memberLimit
         this.#coverImageID = coverImageID
-        this.#createdDate = createdDate?.slice(0, 10)?? null
+        this.#createdDate = createdDate?.toString().slice(0, 10)?? null
         this.#treasuryLink = treasuryLink
         this.#publicTreasury = publicTreasury
         this.#ownerID = ownerID
