@@ -58,6 +58,13 @@ const createTreasury = async (req, res) => {
 }
 
 
+// Get Participant treasury details
+const getParticipantTreasury = (req, res) => {
+    console.log('Get Participants...')
+}
+
+
 module.exports = {
-    createTreasury
+    createTreasury,
+    getParticipantTreasury
 }

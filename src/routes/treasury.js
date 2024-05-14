@@ -1,11 +1,13 @@
 const Router = require('../../custom_package/Route')
 const router = new Router() // New router instant
 
-const { createTreasury } = require('../controllers/treasury')
+const { createTreasury, getParticipantTreasury } = require('../controllers/treasury')
 
 
 
 router.post('/createTreasury', createTreasury)
+
+router.post('/getParticipant', getParticipantTreasury)
 
 
 module.exports = router
