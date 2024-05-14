@@ -6,30 +6,37 @@ class Treasury {
     #treasuryName
     #description
     #memberLimit
+    #createdDate
     #coverImageID
     #treasuryLink
     #globalVisibility
     #publicTreasury
     #ownerID
+    #currentBalance
+    #userRole
 
     // Creating new instant with values 01
-    constructor({treasuryID = null, treasuryName = null, description = null, memberLimit = null, coverImageID = null, treasuryLink = null, publicTreasury = null, ownerID = null, globalVisibility = null}) {
+    constructor({treasuryID = null, treasuryName = null, description = null, memberLimit = null, coverImageID = null, treasuryLink = null, publicTreasury = null, ownerID = null, globalVisibility = null, createdDate = null, currentBalance = null, userRole = null}) {
         console.log('Creating Treasury instant with values')
         this.#treasuryID = treasuryID
         this.#treasuryName = treasuryName
         this.#description = description
         this.#memberLimit = memberLimit
         this.#coverImageID = coverImageID
+        this.#createdDate = createdDate?.slice(0, 10)?? null
         this.#treasuryLink = treasuryLink
         this.#publicTreasury = publicTreasury
         this.#ownerID = ownerID
         this.#globalVisibility = globalVisibility
+        this.#currentBalance = currentBalance
+        this.#userRole = userRole
     }
 
     async updateDatabase() {
+        console.log('created Date',this.#createdDate)
         // Update treasury database with all the current values
-        await conn.promise().query(`INSERT INTO treasury (treasury_ID, treasury_name, description, member_limit, cover_img, treasury_link, global_visibility, public_group) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [this.#treasuryID, this.#treasuryName, this.#description, this.#memberLimit, this.#coverImageID, this.#treasuryLink, this.#globalVisibility, this.#publicTreasury, this.#ownerID])
+        await conn.promise().query(`INSERT INTO treasury (treasury_ID, treasury_name, description, member_limit, cover_img, treasury_link, global_visibility, public_group,created_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [this.#treasuryID, this.#treasuryName, this.#description, this.#memberLimit, this.#coverImageID, this.#treasuryLink, this.#globalVisibility, this.#publicTreasury, this.#createdDate])
 
         // Create treasury owner 
         await conn.promise().query(`INSERT INTO treasury_participants (treasury_ID, user_ID, role) VALUES (?, ?, ?)`,

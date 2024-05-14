@@ -7,7 +7,7 @@ const { createTreasury, getParticipantTreasury } = require('../controllers/treas
 
 router.post('/createTreasury', createTreasury)
 
-router.post('/getParticipant', getParticipantTreasury)
+router.get('/getParticipant', getParticipantTreasury)
 
 
 module.exports = router

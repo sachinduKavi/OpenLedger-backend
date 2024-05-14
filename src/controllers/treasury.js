@@ -1,6 +1,7 @@
 const conn = require('../SQL_Connection')
 const Treasury = require('../DataModels/Treasury') // Treasury class
 const ImageRef = require('../DataModels/ImageRef')
+const {fetchTreasuryParticipants} = require('../dbQuery/treasuryQuery')
 
 const {getLastTreasuryID, getLastPictureID}  = require('../middleware/generateID')
 
@@ -32,12 +33,13 @@ const createTreasury = async (req, res) => {
         {
             treasuryID: await getLastTreasuryID(),
             treasuryName: req.body['treasury_name'],
-            description: req.body['description'],
+            description: req.body['description'],   
             coverImageID: pictureID,
-            globalVisibility: false,
+            globalVisibility: true,
             memberLimit: req.body['member_limit'],
             publicTreasury: req.body['public_treasury'],
-            ownerID: req.body['owner_id']
+            ownerID: req.body['owner_id'],
+            createdDate: req.body['created_date']
         }
     ) 
 
@@ -61,6 +63,15 @@ const createTreasury = async (req, res) => {
 // Get Participant treasury details
 const getParticipantTreasury = (req, res) => {
     console.log('Get Participants...')
+
+    // Creating new treasury instant 
+    const treasury = new Treasury({})
+
+    fetchTreasuryParticipants(req.body['user_ID'])
+
+    res.end(JSON.stringify({
+        body:req.body
+    }))
 }
 
 

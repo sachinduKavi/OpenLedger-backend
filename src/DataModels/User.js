@@ -20,6 +20,7 @@ class User {
     [this.#userID, this.#userName, this.#userEmail, this.#passwordHash, this.#displayPictureID])
     }
 
+
     setUserID(userID) {
         this.#userID = userID
     }
