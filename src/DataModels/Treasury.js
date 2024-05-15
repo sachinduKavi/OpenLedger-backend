@@ -17,7 +17,6 @@ class Treasury {
 
     // Creating new instant with values 01
     constructor({treasuryID = null, treasuryName = null, description = null, memberLimit = null, coverImageID = null, treasuryLink = null, publicTreasury = null, ownerID = null, globalVisibility = null, createdDate = null, currentBalance = null, userRole = null}) {
-        console.log('Creating Treasury instant with values')
         this.#treasuryID = treasuryID
         this.#treasuryName = treasuryName
         this.#description = description
@@ -130,6 +129,23 @@ class Treasury {
             this.getOwnerID()
         ]
     }
+
+    getAllTreasuryData() {
+        return {
+            treasury_ID: this.#treasuryID,
+            treasury_name: this.#treasuryName,
+            description: this.#description,
+            member_limit: this.#memberLimit,
+            treasury_link: this.#treasuryLink,
+            global_visibility: this.#globalVisibility,
+            public_treasury: this.#publicTreasury,
+            current_balance: this.#currentBalance,
+            created_date: this.#createdDate,
+            user_role: this.#createdDate,
+            cover_image_link: this.#coverImageID 
+        }
+    }
+
     setAll(treasuryID, treasuryName, description, memberLimit, coverImageID, treasuryLink, qrImageID, globalVisibility, publicTreasury, ownerID) {
         this.setTreasuryID(treasuryID)
         this.setTreasuryName(treasuryName)

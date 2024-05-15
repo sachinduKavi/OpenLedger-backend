@@ -69,13 +69,11 @@ const getParticipantTreasury = async (req, res) => {
         getProcess = false
         errorMessage = 'databaseFetchError'
     })
-
+    // Objects are turn into back to json 
     res.end(JSON.stringify({
         process: getProcess,
         error: errorMessage,
-        content: treasuryArray.forEach(element => {
-            treasury_ID: element.treasuryID
-        })
+        content: treasuryArray.map(obj => obj.getAllTreasuryData()) // Objects are turned into into json by using map
     }))
 }
 
