@@ -108,8 +108,8 @@ const newUserRegistration = async (req, res) => {
         // Generating picture ID
         const pictureID = await getLastPictureID()
         const imageScale = req.body['picture_scale']
-        
-        const imageRef = new ImageRef() // New instant of the image reference (object)
+        console.log(' image ID', pictureID, req.body)
+        const imageRef = new ImageRef({imageID: pictureID}) // New instant of the image reference (object)
         imageRef.setAll(
             pictureID,
             imageScale['x'],
@@ -127,7 +127,7 @@ const newUserRegistration = async (req, res) => {
         const newUserID = await getLastUserID()
 
         // Creating new User Instant
-        const user = new User()
+        const user = new User({})
         user.setAll(
             newUserID,
             req.body['user_name'],
