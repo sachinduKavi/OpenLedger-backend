@@ -202,7 +202,7 @@ const checkLogin = async (req, res) => {
     // } catch(e) {
     //     errorMessage = 'severError'
     // }
-
+    res.writeHead(200, {'Content-Type': 'application/json',"setCookie": "name=sachindu;Max-Age=3600" })
     res.end(JSON.stringify({
         accountValidate: validate,
         error: errorMessage,
