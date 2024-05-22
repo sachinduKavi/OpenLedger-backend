@@ -168,6 +168,7 @@ const checkLogin = async (req, res) => {
         const userEmail = req.body['user_email'],
                 userPass = req.body['user_pass'];
 
+        let user_ID = null
         // Fetch data from the database
         if(errorMessage == null) {
             const [userResults] = await conn.promise().query('SELECT * FROM user INNER JOIN image_ref ON user.display_picture = image_ref.image_id WHERE user.user_email = ? LIMIT 1', userEmail).catch(err => {
@@ -178,8 +179,9 @@ const checkLogin = async (req, res) => {
                 // Compare hash codes 
                 validate = await bcrypt.compare(userPass, userResults[0]['password_hash']) // Compare the hash codes
                 if(validate) {
+                    user_ID = userResults[0]['user_ID']
                     userDetails = {
-                        user_ID: userResults[0]['user_ID'],
+                        user_ID: user_ID,
                         user_name: userResults[0]['user_name'],
                         user_email: userResults[0]['user_email'],
                         dp_link: userResults[0]['link'],
@@ -202,7 +204,8 @@ const checkLogin = async (req, res) => {
     // } catch(e) {
     //     errorMessage = 'severError'
     // }
-    res.writeHead(200, {'Content-Type': 'application/json',"setCookie": "name=sachindu;Max-Age=3600" })
+    console.log('cookies')
+    res.setHeader('Set-Cookie', `user_ID=${user_ID};Max-Age=3600`)
     res.end(JSON.stringify({
         accountValidate: validate,
         error: errorMessage,

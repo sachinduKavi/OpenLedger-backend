@@ -21,6 +21,7 @@ class Fleet {
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            res.setHeader('Content-Type', 'application/json');
 
             // Display cors error in the console if it dose not have access
             if (req.method === 'OPTIONS') {
@@ -48,7 +49,8 @@ class Fleet {
                                 body: JSON.parse(dataBody)
                             }
                             
-                            res.writeHead(200, {'Content-Type': 'application/json'})
+                            // if(!('setHeader' in request.body)) res.writeHead(200)
+                                
                             router.function(request, res) // Calling router function ...
                         })
 
