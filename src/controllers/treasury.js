@@ -60,12 +60,13 @@ const createTreasury = async (req, res) => {
 }
 
 
-// Get Participant treasury details
+// Get Participant treasury details for relevant userID
 const getParticipantTreasury = async (req, res) => {
     console.log('Get Participants...')
     let getProcess = true, errorMessage = null
-    // const userID = req.body['user_ID']
-    const userID = 'US0000000000000001'
+    const userID = req.body['user_ID']
+    console.log('userID')
+    // const userID = 'US0000000000000001'
     // Creating new treasury instants array
     const treasuryArray = await fetchTreasuryParticipants(userID).catch(err => {
         getProcess = false

@@ -205,7 +205,8 @@ const checkLogin = async (req, res) => {
     //     errorMessage = 'severError'
     // }
     console.log('cookies')
-    res.setHeader('Set-Cookie', `user_ID=${user_ID};Max-Age=3600`)
+    res.setHeader('Set-Cookie', `user_ID=${user_ID};Max-Age=36;path=/;Same-Site=None`)
+    res.writeHead(200)
     res.end(JSON.stringify({
         accountValidate: validate,
         error: errorMessage,

@@ -49,7 +49,7 @@ class Fleet {
                                 body: JSON.parse(dataBody)
                             }
                             
-                            // if(!('setHeader' in request.body)) res.writeHead(200)
+                            if(!('setHeader' in request.body)) res.writeHead(200)
                                 
                             router.function(request, res) // Calling router function ...
                         })
