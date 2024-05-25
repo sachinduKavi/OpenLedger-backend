@@ -192,6 +192,8 @@ const checkLogin = async (req, res) => {
                         }
                     }
                     validate = true
+                     
+                    
                 }
                 
           
@@ -204,8 +206,11 @@ const checkLogin = async (req, res) => {
     // } catch(e) {
     //     errorMessage = 'severError'
     // }
+    // Creating user Instant
+    const user = new User({userID: user_ID})
     console.log('cookies')
-    res.setHeader('Set-Cookie', `user_ID=${user_ID};Max-Age=36;path=/;Same-Site=None`)
+    // res.setHeader('Set-Cookie', `user_ID=${user_ID};Max-Age=3600;path=/;Same-Site=None;Secure`)
+    res.setHeader('Set-Cookie', `user_token=${user.createUserIDToken()}; HttpOnly; Secure; SameSite=None; path=/;`)
     res.writeHead(200)
     res.end(JSON.stringify({
         accountValidate: validate,

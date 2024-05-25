@@ -1,8 +1,9 @@
 const conn = require('../SQL_Connection')
 const Treasury = require('../DataModels/Treasury') // Treasury class
 const ImageRef = require('../DataModels/ImageRef')
+const jwt = require('jsonwebtoken')
 const {fetchTreasuryParticipants} = require('../dbQuery/treasuryQuery')
-
+const {parseCookies}  = require('../middleware/Cookies')
 const {getLastTreasuryID, getLastPictureID}  = require('../middleware/generateID')
 
 
@@ -65,6 +66,11 @@ const getParticipantTreasury = async (req, res) => {
     console.log('Get Participants...')
     let getProcess = true, errorMessage = null
     const userID = req.body['user_ID']
+
+    // Extracting user token from the cookies
+    const userToken = req.headers
+    console.log(parseCookies(req))
+
     console.log('userID')
     // const userID = 'US0000000000000001'
     // Creating new treasury instants array

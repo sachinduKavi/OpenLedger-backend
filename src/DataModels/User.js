@@ -1,4 +1,6 @@
 const conn = require('../SQL_Connection')
+const jwt = require('jsonwebtoken')
+const {SECRET_KEY} = require('../middleware/KEYS')
 class User {
     #userID 
     #userName 
@@ -18,6 +20,11 @@ class User {
     async updateDatabase() {
         const [userResult] = await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES (?, ?, ?, ?, ?)',
     [this.#userID, this.#userName, this.#userEmail, this.#passwordHash, this.#displayPictureID])
+    }
+
+    // Generate json web token for the user ID
+    createUserIDToken() {
+        return jwt.sign({user_ID: this.#userID}, SECRET_KEY, { expiresIn: '1h' })
     }
 
 

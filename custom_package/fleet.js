@@ -18,10 +18,12 @@ class Fleet {
         // Initiate the sever 
         this.server = http.createServer((req, res) => {
             // Access control
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
             res.setHeader('Content-Type', 'application/json');
+    
 
             // Display cors error in the console if it dose not have access
             if (req.method === 'OPTIONS') {
@@ -29,7 +31,6 @@ class Fleet {
                 res.end()
                 return
             }
-
               
             let count = 0
             for(let useCase of this.fleetBundle) {
@@ -46,7 +47,8 @@ class Fleet {
                         req.on('end', () => {
                             // Creating request body
                             const request = {
-                                body: JSON.parse(dataBody)
+                                body: JSON.parse(dataBody),
+                                headers: req.headers
                             }
                             
                             if(!('setHeader' in request.body)) res.writeHead(200)
