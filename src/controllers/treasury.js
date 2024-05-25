@@ -2,6 +2,7 @@ const conn = require('../SQL_Connection')
 const Treasury = require('../DataModels/Treasury') // Treasury class
 const ImageRef = require('../DataModels/ImageRef')
 const jwt = require('jsonwebtoken')
+const {SECRET_KEY} = require('../middleware/KEYS')
 const {fetchTreasuryParticipants} = require('../dbQuery/treasuryQuery')
 const {parseCookies}  = require('../middleware/Cookies')
 const {getLastTreasuryID, getLastPictureID}  = require('../middleware/generateID')
@@ -64,26 +65,34 @@ const createTreasury = async (req, res) => {
 // Get Participant treasury details for relevant userID
 const getParticipantTreasury = async (req, res) => {
     console.log('Get Participants...')
-    let getProcess = true, errorMessage = null
-    const userID = req.body['user_ID']
-
+    let getProcess = true, errorMessage = null, content = null
     // Extracting user token from the cookies
-    const userToken = req.headers
-    console.log(parseCookies(req))
-
-    console.log('userID')
-    // const userID = 'US0000000000000001'
-    // Creating new treasury instants array
-    const treasuryArray = await fetchTreasuryParticipants(userID).catch(err => {
+    const user_token = parseCookies(req).user_token
+    try {
+        // Verify the user_token
+        const token = jwt.verify(user_token, SECRET_KEY)
+        const treasuryArray = await fetchTreasuryParticipants(token.user_ID).catch(err => {
+            getProcess = false
+            errorMessage = 'databaseFetchError'
+        })
+        content = treasuryArray
+    } catch(err) {
+        console.log('Token Expired..', err)
         getProcess = false
-        errorMessage = 'databaseFetchError'
-    })
+        errorMessage = err.name
+        // res.writeHead(404, {'Content-Type': '/login'})
+        res.end(err.name)
+        return
+    }
+
     // Objects are turn into back to json 
     res.end(JSON.stringify({
         process: getProcess,
         error: errorMessage,
-        content: treasuryArray.map(obj => obj.getAllTreasuryData()) // Objects are turned into into json by using map
+        content: content?.map(obj => obj.getAllTreasuryData()) ?? null// Objects are turned into into json by using map
     }))
+    
+    
 }
 
 
