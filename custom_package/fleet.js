@@ -43,8 +43,8 @@ class Fleet {
                             dataBody += chunk
                         })
 
-
                         req.on('end', () => {
+                            if(dataBody.length === 0) {dataBody = "{}"}
                             // Creating request body
                             const request = {
                                 body: JSON.parse(dataBody),

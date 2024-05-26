@@ -3,6 +3,7 @@ const conn = require('../SQL_Connection')
 const saltRounds = 6
 
 const User = require('../DataModels/User') // Importing User class
+const Member = require('../DataModels/Member')
 const ImageRef = require('../DataModels/ImageRef') // Importing ImageRef class 
 
 const { sendAuthMail } = require('../SystemEmail')
@@ -208,7 +209,6 @@ const checkLogin = async (req, res) => {
     // }
     // Creating user Instant
     const user = new User({userID: user_ID})
-    console.log('cookies')
     // res.setHeader('Set-Cookie', `user_ID=${user_ID};Max-Age=3600;path=/;Same-Site=None;Secure`)
     res.setHeader('Set-Cookie', `user_token=${user.createUserIDToken()}; HttpOnly; Secure; SameSite=None; path=/;`)
     res.writeHead(200)
@@ -229,11 +229,8 @@ const testingFunction = async (req, res) => {
     // Testing function to test the request send 
     console.log('Inside the testing class')
 
-    console.log(await getLastUserID('user'))
-
-    res.end(JSON.stringify({
-        test: 'pass'
-    }))
+    const member = new Member()
+    
 }
 
 

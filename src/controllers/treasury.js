@@ -3,9 +3,10 @@ const Treasury = require('../DataModels/Treasury') // Treasury class
 const ImageRef = require('../DataModels/ImageRef')
 const jwt = require('jsonwebtoken')
 const {SECRET_KEY} = require('../middleware/KEYS')
-const {fetchTreasuryParticipants} = require('../dbQuery/treasuryQuery')
+const {fetchTreasuryParticipants, checkUserTreasury} = require('../dbQuery/treasuryQuery')
 const {parseCookies}  = require('../middleware/Cookies')
 const {getLastTreasuryID, getLastPictureID}  = require('../middleware/generateID')
+const {verifyToken, signToken} = require('../middleware/JWT')
 
 
 // Create new treasury step 01 
@@ -95,8 +96,51 @@ const getParticipantTreasury = async (req, res) => {
     
 }
 
+// Verify the treasury selected by the user 
+// IF the treasury is verifies then treasury token is passed to the client 
+const verifyTreasury = (req, res) => {
+    let errorMessage = null, user_role = null, process = true
+    console.log('Verify treasury...')
+    const treasuryID = req.body['treasury_ID']
+    
+    const user_token = parseCookies(req).user_token // Fetch cookies from the request
+    // Decode the the user token
+    const [decodedUserToken, tokenError] = verifyToken(user_token)
+    if(tokenError == null) {
+        // No token errors
+        const userID = decodedUserToken.user_ID
+        // Check whether the user ID present in the treasury participants
+        const [entranceValidate, userRole] = checkUserTreasury(userID, treasuryID)
+        if(entranceValidate) {
+            // Access granted user
+            // Create new access token which include both userID and treasuryID
+            user_role = userRole
+            const user_token = signToken({userID: userID, treasuryID: treasuryID})
+            res.setHeader('Set-Cookie', `user_token=${user_token}; HttpOnly; Secure; SameSite=None; path=/;`)
+            res.writeHead(200)
+        } else {
+            // Unauthorized user
+            process = false
+            errorMessage = 'UnauthorizedUser'
+            res.writeHead(200)
+        }
+    } else {
+        // Token error found
+        process = false
+        errorMessage = tokenError
+        res.writeHead(200)
+    }
+
+    res.end(JSON.stringify({
+        process: process,
+        user_role: user_role,
+        errorMessage: errorMessage
+    }))
+}
+
 
 module.exports = {
     createTreasury,
-    getParticipantTreasury
+    getParticipantTreasury,
+    verifyTreasury
 }

@@ -25,7 +25,17 @@ const fetchTreasuryParticipants = async (userID) => {
     return treasuryObjectArray
 }
 
+// Check data base for user ID and treasury ID both present in the database
+// If present returns the users role in the group
+const checkUserTreasury = async (userID, treasuryID) => {
+    const [participantResult] = await conn.promise().query('SELECT role FROM treasury_participants WHERE treasury_ID = ? AND user_ID = ?', 
+    [treasuryID, userID])
+    //  Return the user role in the treasury
+    console.log(participantResult)
+    return [(participantResult.length > 0), participantResult[0]['role']]   
+} 
 
 module.exports = {
-    fetchTreasuryParticipants
+    fetchTreasuryParticipants,
+    checkUserTreasury
 }

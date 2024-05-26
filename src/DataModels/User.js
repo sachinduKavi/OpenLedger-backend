@@ -16,6 +16,10 @@ class User {
         this.displayPictureID = displayPictureID
     }
 
+    showPosition() {
+        console.log('I am a user')
+    }
+
     // Update Database with current data
     async updateDatabase() {
         const [userResult] = await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES (?, ?, ?, ?, ?)',
