@@ -31,8 +31,7 @@ const checkUserTreasury = async (userID, treasuryID) => {
     const [participantResult] = await conn.promise().query('SELECT role FROM treasury_participants WHERE treasury_ID = ? AND user_ID = ?', 
     [treasuryID, userID])
     //  Return the user role in the treasury
-    console.log(participantResult)
-    return [(participantResult.length > 0), participantResult[0]['role']]   
+    return [(participantResult.length > 0), (participantResult.length > 0)?participantResult[0]['role']: null]
 } 
 
 module.exports = {

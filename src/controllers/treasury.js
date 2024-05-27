@@ -98,7 +98,7 @@ const getParticipantTreasury = async (req, res) => {
 
 // Verify the treasury selected by the user 
 // IF the treasury is verifies then treasury token is passed to the client 
-const verifyTreasury = (req, res) => {
+const verifyTreasury = async (req, res) => {
     let errorMessage = null, user_role = null, process = true
     console.log('Verify treasury...')
     const treasuryID = req.body['treasury_ID']
@@ -110,7 +110,7 @@ const verifyTreasury = (req, res) => {
         // No token errors
         const userID = decodedUserToken.user_ID
         // Check whether the user ID present in the treasury participants
-        const [entranceValidate, userRole] = checkUserTreasury(userID, treasuryID)
+        const [entranceValidate, userRole] = await checkUserTreasury(userID, treasuryID)
         if(entranceValidate) {
             // Access granted user
             // Create new access token which include both userID and treasuryID

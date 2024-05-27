@@ -9,6 +9,7 @@ const ImageRef = require('../DataModels/ImageRef') // Importing ImageRef class
 const { sendAuthMail } = require('../SystemEmail')
 
 const {UserModel, TempCodeModel} = require('../Model')
+const { checkUserTreasury } = require('../dbQuery/treasuryQuery')
 
 
 // Validate the code send by the client/user 
@@ -228,7 +229,7 @@ const checkLogin = async (req, res) => {
 const testingFunction = async (req, res) => {
     // Testing function to test the request send 
     console.log('Inside the testing class')
-
+    checkUserTreasury("54252", "54")
     const member = new Member()
     
 }
