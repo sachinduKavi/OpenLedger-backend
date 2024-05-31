@@ -229,7 +229,6 @@ const checkLogin = async (req, res) => {
 const testingFunction = async (req, res) => {
     // Testing function to test the request send 
     console.log('Inside the testing class')
-    checkUserTreasury("54252", "54")
     const member = new Member()
     
 }
