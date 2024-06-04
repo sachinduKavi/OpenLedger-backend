@@ -1,4 +1,3 @@
-const conn = require('../SQL_Connection')
 const Treasury = require('../DataModels/Treasury') // Treasury class
 const ImageRef = require('../DataModels/ImageRef')
 const jwt = require('jsonwebtoken')

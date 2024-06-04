@@ -4,6 +4,7 @@ const fleetApp = new Fleet() // Create instant of the fleet custom package
 
 const userRouter = require('./src/routes/user')
 const treasuryRouter = require('./src/routes/treasury')
+const ledgerRouter = require('./src/routes/ledger')
 
 
 const PORT = 3500
@@ -18,6 +19,8 @@ conn.connect((err) => {
 fleetApp.use('/user', userRouter)
 
 fleetApp.use('/treasury', treasuryRouter)
+
+fleetApp.use('/ledger', ledgerRouter)
 
 
 

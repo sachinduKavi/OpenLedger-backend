@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const {SECRET_KEY} = require('./KEYS')
-const Treasury = require('../DataModels/Treasury')
 
 
 // Verify JWT token and return the payload
