@@ -12,4 +12,11 @@ const isAuthenticated = (req, res, next) => {
 
 }
 
-module.exports = {isAuthenticated}
+
+// This function can use to separate Class object and normal Objects 
+// Function will  return true if the object is a class object 
+const isClassObject = (obj) => {
+    return obj.constructor && obj.constructor !== Object
+} 
+
+module.exports = {isAuthenticated, isClassObject}

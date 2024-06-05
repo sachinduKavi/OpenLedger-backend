@@ -33,7 +33,19 @@ const getLastTreasuryID = async  () => {
         : generateID(userID[0]['treasury_ID'])
 }
 
+
+// Get the last used treasury ID
+const getLastLedgerID = async  () => {
+    const [userID] = await conn.promise().query('SELECT record_ID FROM ledger ORDER BY record_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (userID.length == 0)
+        ? generateID('LR00')
+        : generateID(userID[0]['ledger_ID'])
+}
+
 module.exports = {
     getLastTreasuryID,
-    getLastPictureID
+    getLastPictureID,
+    getLastLedgerID
 }

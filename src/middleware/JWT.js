@@ -7,7 +7,7 @@ const verifyToken = (token) => {
     try {
         return [jwt.verify(token, SECRET_KEY), null]
     } catch(err) {
-        return [null, err.name]
+        return [false, err.name]
     }
 }
 
