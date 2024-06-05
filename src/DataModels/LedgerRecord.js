@@ -54,6 +54,31 @@ class LedgerRecord {
     }
 
 
+    // Return all the ledger records related to the given treasuryID
+    static async fetchAllLedgerRecords(treasuryID) {
+        console.log('TreasuryID', treasuryID)
+        let ledgerArray = [] // Empty ledger records array
+        const [ledgersResult] = await conn.promise().query('SELECT record_ID, title, description, amount, time, created_date FROM ledger WHERE treasury_ID = ?',
+            [treasuryID]
+        )
+
+        for(let element of ledgersResult) {
+            const evidenceArray = await Evidence.fetchAllEvidence(element.record_ID)
+            const ledger = new LedgerRecord({
+                recordID: element.record_ID,
+                title: element.title,
+                description: element.description,
+                amount: element.amount,
+                createdDate: element.created_date.toString().slice(0, 12) + "#" + element.time.toString().slice(0, 5),
+                evidenceArray: evidenceArray
+            })
+            ledgerArray.push(ledger)
+        }
+
+        console.log(ledgerArray[0].getEvidenceArray())
+    }
+
+
     // Creating new ledger record in the SQL database 
     async createNewRecord() {
         console.log('creating new database record...')

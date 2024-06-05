@@ -20,6 +20,7 @@ class Evidence {
     // Convert evidence object to JSON
     extractJSON() {
         return {
+            description: this.#description,
             imageName: this.#imageName,
             imageLink: this.#imageLink,
             description: this.#description,
@@ -27,19 +28,37 @@ class Evidence {
     }
 
 
+    // Fetch all the evidence related to the recordID
+    static async fetchAllEvidence(recordID) {
+        console.log('Record ID' ,recordID)
+        let evidenceArray = [] // Empty evidence array
+        const [evidenceResults] = await conn.promise().query('SELECT evidence_ID, description, link FROM evidence_image WHERE record_ID = ?', [recordID])
+
+        for(let element of evidenceResults) {
+            evidenceArray.push(new Evidence({
+                recordID: recordID,
+                evidenceID: element.evidence_ID,
+                imageLink: element.link,
+                description: element.description
+            }))
+            console.log(element.link)
+        }
+
+        // console.log('evidence Array',evidenceArray[0].getImageLink())
+        return evidenceArray
+    }
+
+
     // Creating evidence record in the database
     async createEvidence(recordID) {
-        if(this.#evidenceID === null) this.#evidenceID = await getEvidenceID() // Generate new Evidence ID
-
-        console.log('evidence ID', this.#evidenceID)
+        // Generate new Evidence ID
+        if(this.#evidenceID === null) this.#evidenceID = await getEvidenceID() 
 
         const image = new ImageRef({link: this.#imageLink}) // ImageRef object 
         const imageID = await image.updateDatabase() // Create image link record
 
         const [result] = await conn.promise().query('INSERT INTO evidence (evidence_ID, record_ID, description, image) VALUES (?, ?, ?, ?)',
         [this.#evidenceID, recordID, this.#description, imageID])
-
-        console.log(result)
     }
 
     // Getters and Setters of the evidence class
