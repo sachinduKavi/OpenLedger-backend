@@ -22,7 +22,7 @@ class LedgerRecord {
         this.#recordID = recordID
         this.#createdDate = createdDate
         
-        if (!isClassObject(this.#evidenceArray[0])) this.#convertToEvidenceObject()
+        if (this.#evidenceArray.length > 0 && !isClassObject(this.#evidenceArray[0])) this.#convertToEvidenceObject()
     }
 
 
@@ -64,6 +64,7 @@ class LedgerRecord {
         for(let element of ledgersResult) {
             const evidenceArray = await Evidence.fetchAllEvidence(element.record_ID)
             const ledger = new LedgerRecord({
+                treasuryID: treasuryID,
                 recordID: element.record_ID,
                 title: element.title,
                 description: element.description,
