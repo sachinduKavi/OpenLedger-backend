@@ -73,17 +73,15 @@ class LedgerRecord {
 
         // Update treasury balance 
         if(this.#amount !== 0) {
-            console.log('inside...')
             const treasury = new Treasury({treasuryID: this.#treasuryID}) // New treasury instant
             await treasury.updateTreasuryBalance(this.#amount)
         }
         
-        console.log(result)
-        return true
+        return result.affectedRows > 0
     }   
 
 
-    
+
     // Getters and Setters
     getCreatedDate(){
         return this.#createdDate

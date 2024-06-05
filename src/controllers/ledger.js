@@ -2,6 +2,8 @@ const {parseCookies} = require('../middleware/Cookies')
 const {verifyToken} = require('../middleware/JWT')
 const LedgerRecord = require('../DataModels/LedgerRecord')
 
+
+
 // Creating new leader record
 const createLedgerRecord = async (req, res) => {
     console.log('creating ledger record...')
@@ -12,8 +14,10 @@ const createLedgerRecord = async (req, res) => {
         // Valid user token
         // Creating new ledger record object from the request body
         const ledgerRecord = new LedgerRecord(req.body)
-        if(await ledgerRecord.createNewRecord()) {
-            // Record created successfully
+        if(!await ledgerRecord.createNewRecord()) {
+            // Record is not created 
+            errorMessage = 'serverError'
+            process = false
         }
 
     } else {
@@ -23,9 +27,8 @@ const createLedgerRecord = async (req, res) => {
         errorMessage = token_error
     }
     
-    
-
-    res.end(JSON.stringify({token: token, error: token_error}))
+    // Send response to the client about the status of the request 
+    res.end(JSON.stringify({procedure: process, errorMessage: errorMessage}))
 }
 
 
