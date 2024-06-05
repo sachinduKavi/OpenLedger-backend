@@ -34,20 +34,35 @@ const createLedgerRecord = async (req, res) => {
 // Fetch all ledger records related to the user and treasury
 const allLedgerRecords = async (req, res) => {
     console.log('all ledger records...')
-    let procedure = true, errorMessage = null // Request state variables
+    let procedure = true, errorMessage = null, content = null // Request state variables
 
     // Extracting user cookies and verify the user JWT token
     const [token, token_error] = verifyToken(parseCookies(req).user_token)
-    console.log(token)
     if(token) {
         // Token is verified
         const treasuryID = token.treasury_ID
-        await LedgerRecord.fetchAllLedgerRecords(treasuryID)
+        // Fetch all the Ledger records from the database
+        const ledgerRecords = await LedgerRecord.fetchAllLedgerRecords(treasuryID).catch(err => {
+            procedure = false
+            errorMessage = 'serverError'
+        }) 
+
+        const ledgerJSONarray = []
+        ledgerRecords.forEach(element => {
+            ledgerJSONarray.push(element.extractJSON())
+        });
+        content = ledgerJSONarray
     } else {
         // Invalid token
+        procedure = false
+        errorMessage = token_error
     }
 
-    res.end(JSON.stringify({hello: 'hola'}))
+    res.end(JSON.stringify({
+        procedure: procedure,
+        errorMessage: errorMessage,
+        content: content
+    }))
 }
 
 

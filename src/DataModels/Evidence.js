@@ -30,9 +30,9 @@ class Evidence {
 
     // Fetch all the evidence related to the recordID
     static async fetchAllEvidence(recordID) {
-        console.log('Record ID' ,recordID)
         let evidenceArray = [] // Empty evidence array
         const [evidenceResults] = await conn.promise().query('SELECT evidence_ID, description, link FROM evidence_image WHERE record_ID = ?', [recordID])
+
 
         for(let element of evidenceResults) {
             evidenceArray.push(new Evidence({
@@ -41,10 +41,9 @@ class Evidence {
                 imageLink: element.link,
                 description: element.description
             }))
-            console.log(element.link)
         }
-
-        // console.log('evidence Array',evidenceArray[0].getImageLink())
+        
+        
         return evidenceArray
     }
 

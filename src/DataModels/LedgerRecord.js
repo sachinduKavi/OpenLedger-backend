@@ -56,7 +56,6 @@ class LedgerRecord {
 
     // Return all the ledger records related to the given treasuryID
     static async fetchAllLedgerRecords(treasuryID) {
-        console.log('TreasuryID', treasuryID)
         let ledgerArray = [] // Empty ledger records array
         const [ledgersResult] = await conn.promise().query('SELECT record_ID, title, description, amount, time, created_date FROM ledger WHERE treasury_ID = ?',
             [treasuryID]
@@ -75,7 +74,7 @@ class LedgerRecord {
             ledgerArray.push(ledger)
         }
 
-        console.log(ledgerArray[0].getEvidenceArray())
+        return ledgerArray
     }
 
 
