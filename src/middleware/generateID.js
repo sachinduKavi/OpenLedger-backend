@@ -41,11 +41,23 @@ const getLastLedgerID = async  () => {
     })
     return (userID.length == 0)
         ? generateID('LR00')
-        : generateID(userID[0]['ledger_ID'])
+        : generateID(userID[0]['record_ID'])
+}
+
+
+// Get the last used EVIDENCE ID
+const getEvidenceID = async  () => {
+    const [userID] = await conn.promise().query('SELECT evidence_ID FROM evidence ORDER BY evidence_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (userID.length == 0)
+        ? generateID('EV00')
+        : generateID(userID[0]['evidence_ID'])
 }
 
 module.exports = {
     getLastTreasuryID,
     getLastPictureID,
-    getLastLedgerID
+    getLastLedgerID,
+    getEvidenceID
 }

@@ -12,7 +12,9 @@ const createLedgerRecord = async (req, res) => {
         // Valid user token
         // Creating new ledger record object from the request body
         const ledgerRecord = new LedgerRecord(req.body)
-        
+        if(await ledgerRecord.createNewRecord()) {
+            // Record created successfully
+        }
 
     } else {
         // Invalid token 

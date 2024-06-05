@@ -2,6 +2,7 @@ const Evidence = require('./Evidence')
 const {isClassObject} = require('../middleware/auth')
 const conn = require('../SQL_Connection')
 const {getLastLedgerID} = require('../middleware/generateID')
+const Treasury = require('./Treasury')
 class LedgerRecord {
     #title
     #description
@@ -56,10 +57,33 @@ class LedgerRecord {
     // Creating new ledger record in the SQL database 
     async createNewRecord() {
         console.log('creating new database record...')
+
+        // Separating data and time into two columns
+        const dateTime = this.#createdDate.split('#')
+
         if(this.#recordID === null) this.#recordID = await getLastLedgerID() // Creating ledger record ID
-        await conn.promise().query('INSERT INTO ledger (record_ID, treasury_ID, title, description, amount, created_date)')
+        // Creating new ledger record
+        const [result] = await conn.promise().query('INSERT INTO ledger (record_ID, treasury_ID, title, description, amount, created_date, time) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [this.#recordID, this.#treasuryID, this.#title, this.#description, this.#amount, dateTime[0], dateTime[1]])
+
+        // Create Evidence records
+        for(let i = 0; i < this.#evidenceArray.length; i++) {
+            await this.#evidenceArray[i].createEvidence(this.#recordID)
+        }
+
+        // Update treasury balance 
+        if(this.#amount !== 0) {
+            console.log('inside...')
+            const treasury = new Treasury({treasuryID: this.#treasuryID}) // New treasury instant
+            await treasury.updateTreasuryBalance(this.#amount)
+        }
+        
+        console.log(result)
+        return true
     }   
 
+
+    
     // Getters and Setters
     getCreatedDate(){
         return this.#createdDate

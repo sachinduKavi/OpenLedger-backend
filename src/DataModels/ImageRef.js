@@ -1,5 +1,5 @@
 const conn = require('../SQL_Connection')
-
+const {getLastPictureID} = require('../middleware/generateID')
 class ImageRef {
     // Private variables
     #imageID
@@ -9,7 +9,7 @@ class ImageRef {
     #link 
 
 
-    constructor({imageID = null, xAxis = null, yAxis = null, scale = null , link = null }) {
+    constructor({imageID = null, xAxis = 0, yAxis = 0, scale = 1 , link = null }) {
         this.#imageID = imageID
         this.#xAxis = xAxis
         this.#yAxis = yAxis
@@ -19,8 +19,13 @@ class ImageRef {
 
     // Update the sql database with current values in the instant
     async updateDatabase() {
+        // Generate a image ID if image ID is not given
+        if(this.#imageID === null) this.#imageID = await getLastPictureID()
+        
         const [imageResult] = await conn.promise().query('INSERT INTO image_ref (image_id, x_axis, y_axis, scale, link) VALUES(?, ?, ?, ?, ?)',
-    [this.#imageID, this.#xAxis, this.#yAxis, this.#scale, this.#link])
+        [this.#imageID, this.#xAxis, this.#yAxis, this.#scale, this.#link])
+
+        return this.#imageID
     }
 
     setImageId(imageId) {

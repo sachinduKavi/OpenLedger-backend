@@ -31,6 +31,17 @@ class Treasury {
         this.#userRole = userRole
     }
 
+
+    // Update treasury balance query
+    async updateTreasuryBalance(amount) {
+        const [updateResult] = await conn.promise().query(`UPDATE treasury SET current_balance = current_balance + ? WHERE treasury_ID = ?`,
+            [amount, this.#treasuryID]
+        )
+
+        return updateResult.affectedRows > 0
+    }
+
+
     async updateDatabase() {
         console.log('created Date',this.#createdDate)
         // Update treasury database with all the current values
