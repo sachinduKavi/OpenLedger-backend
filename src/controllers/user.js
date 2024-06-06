@@ -207,8 +207,6 @@ const checkLogin = async (req, res) => {
                             scale: userResults[0]['scale']
                         }
                     }
-                    validate = true
-                     
                     
                 }
                 
