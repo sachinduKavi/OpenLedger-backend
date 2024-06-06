@@ -68,9 +68,11 @@ const getParticipantTreasury = async (req, res) => {
     let getProcess = true, errorMessage = null, content = null
     // Extracting user token from the cookies
     const user_token = parseCookies(req).user_token
+
     try {
         // Verify the user_token
         const token = jwt.verify(user_token, SECRET_KEY)
+        console.log('token', token.user_ID)
         const treasuryArray = await fetchTreasuryParticipants(token.user_ID).catch(err => {
             getProcess = false
             errorMessage = 'databaseFetchError'

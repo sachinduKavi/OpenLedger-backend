@@ -10,6 +10,7 @@ const { sendAuthMail } = require('../SystemEmail')
 
 const {UserModel, TempCodeModel} = require('../Model')
 const { checkUserTreasury } = require('../dbQuery/treasuryQuery')
+const {signToken} = require('../middleware/JWT')
 
 
 // Validate the code send by the client/user 
@@ -101,7 +102,6 @@ async function getLastPictureID() {
 // New user registration step 03
 const newUserRegistration = async (req, res) => {
     let process_success = true
-    console.log("New user registration ...")
 
     try{
         // Converting newly created password to hash code 
@@ -131,9 +131,9 @@ const newUserRegistration = async (req, res) => {
         const user = new User({})
         user.setAll(
             newUserID,
-            req.body['userName'],
+            req.body.userName,
             hashPass,
-            req.body['userEmail'],
+            req.body.userEmail,
             pictureID
         ) // Setting all the parameters of user instant
         // Update database with current values
@@ -141,14 +141,21 @@ const newUserRegistration = async (req, res) => {
             process_success = false
             console.log('Database error')
         })
-        
+
+        // Creating token user_token with the userID contains
+        const user_token = signToken({userID: newUserID})
+        const userName = req.body['userName']
+
+        //Creating cookie containing the user_token
+        res.setHeader('Set-Cookie', `user_token=${user_token}; HttpOnly; Secure; SameSite=None; path=/;`)
+        res.writeHead(200)
         // Response to client 
         res.end(JSON.stringify({
             process_success: process_success,
             content: {
                 userID: newUserID,
-                userName: req.body['user_name'],
-                userEmail: req.body['user_email'],
+                userName: userName,
+                userEmail: req.body['userEmail'],
                 pictureScale: imageScale,
                 dpLink: req.body['dpLink']
             }
@@ -169,7 +176,6 @@ const newUserRegistration = async (req, res) => {
 // Check login credentials and transfer user data
 // User login to the system
 const checkLogin = async (req, res) => {
-    console.log('user login', req.body)
     // Initiate response variables
     let errorMessage = null, validate = false, userDetails = null;
 
