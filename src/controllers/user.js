@@ -105,19 +105,18 @@ const newUserRegistration = async (req, res) => {
 
     try{
         // Converting newly created password to hash code 
-        const hashPass = await bcrypt.hash(req.body['user_password'], saltRounds)
+        const hashPass = await bcrypt.hash(req.body['userPassword'], saltRounds)
         
         // Generating picture ID
         const pictureID = await getLastPictureID()
-        const imageScale = req.body['picture_scale']
-        console.log(' image ID', pictureID, req.body)
+        const imageScale = req.body['pictureScale']
         const imageRef = new ImageRef({imageID: pictureID}) // New instant of the image reference (object)
         imageRef.setAll(
             pictureID,
             imageScale['x'],
             imageScale['y'],
             imageScale['scale'],
-            req.body['dp_link'],
+            req.body['dpLink'],
         )
         // Update image_reference table
         await imageRef.updateDatabase().catch(err => {
@@ -132,9 +131,9 @@ const newUserRegistration = async (req, res) => {
         const user = new User({})
         user.setAll(
             newUserID,
-            req.body['user_name'],
+            req.body['userName'],
             hashPass,
-            req.body['user_email'],
+            req.body['userEmail'],
             pictureID
         ) // Setting all the parameters of user instant
         // Update database with current values
@@ -145,10 +144,18 @@ const newUserRegistration = async (req, res) => {
         
         // Response to client 
         res.end(JSON.stringify({
-            process_success: process_success
+            process_success: process_success,
+            content: {
+                userID: newUserID,
+                userName: req.body['user_name'],
+                userEmail: req.body['user_email'],
+                pictureScale: imageScale,
+                dpLink: req.body['dpLink']
+            }
         }))
     } catch(e) {
         // Error occur during the process
+        console.log(e)
         res.end(JSON.stringify({
             process_success: false,
             message: e
@@ -162,7 +169,7 @@ const newUserRegistration = async (req, res) => {
 // Check login credentials and transfer user data
 // User login to the system
 const checkLogin = async (req, res) => {
-    console.log('user login')
+    console.log('user login', req.body)
     // Initiate response variables
     let errorMessage = null, validate = false, userDetails = null;
 
@@ -175,6 +182,7 @@ const checkLogin = async (req, res) => {
         if(errorMessage == null) {
             const [userResults] = await conn.promise().query('SELECT * FROM user INNER JOIN image_ref ON user.display_picture = image_ref.image_id WHERE user.user_email = ? LIMIT 1', userEmail).catch(err => {
                 errorMessage = 'databaseError'
+                console.log('databaseError')
             })
         // Check whether the email exists in the database
             if(userResults.length != 0) {
