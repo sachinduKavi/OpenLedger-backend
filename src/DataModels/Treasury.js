@@ -31,6 +31,37 @@ class Treasury {
         this.#userRole = userRole
     }
 
+    // Fill the fields with the data in the database
+    async fetchFromDatabase() {
+        const [results] = await conn.promise().query('SELECT treasury_name, description, member_limit, link, treasury_link, global_visibility, public_group, current_balance, created_date FROM treasury JOIN image_ref ON treasury.cover_img = image_ref.image_id WHERE treasury_ID = ? LIMIT 1', [this.#treasuryID])
+        
+        const treasuryResults = results[0]
+        // Set instant values
+        this.#treasuryName = treasuryResults['treasury_name']
+        this.#description = treasuryResults['description']
+        this.#memberLimit = treasuryResults['member_limit']
+        this.#coverImageID = treasuryResults['link']
+        this.#globalVisibility = treasuryResults['global_visibility']
+        this.#publicTreasury = treasuryResults['public_group']
+        this.#currentBalance = treasuryResults['current_balance']
+        this.#createdDate = treasuryResults['created_date']
+    }
+
+    extractJSON() {
+        return {
+            treasuryID: this.#treasuryID,
+            treasuryName: this.#treasuryName,
+            description: this.#description,
+            memberLimit: this.#memberLimit,
+            coverImageID: this.#coverImageID,
+            createdDate: this.#createdDate,
+            treasuryLink: this.#treasuryLink,
+            publicTreasury: this.#publicTreasury,
+            ownerID: this.#ownerID,
+            currentBalance: this.#currentBalance
+        }
+    }
+
 
     // Update treasury balance query
     async updateTreasuryBalance(amount) {

@@ -140,8 +140,29 @@ const verifyTreasury = async (req, res) => {
 }
 
 
+// Get all the treasury data 
+const getTreasuryData = async (req, res) => {
+    let process = true, errorMessage = null
+    // Creating treasury instant with the treasury ID
+    const treasury = new Treasury({treasuryID: req.body['treasuryID']})
+
+    await treasury.fetchFromDatabase().catch(err => {
+        process = false
+        errorMessage = 'severError'
+    })
+
+    res.end(JSON.stringify({
+        process: process,
+        errorMessage: errorMessage,
+        content: treasury.extractJSON()
+    }))
+
+}
+
+
 module.exports = {
     createTreasury,
     getParticipantTreasury,
-    verifyTreasury
+    verifyTreasury,
+    getTreasuryData
 }
