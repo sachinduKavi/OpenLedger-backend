@@ -6,7 +6,7 @@ function parseCookies(request) {
     if(cookieHeader) {
         cookieHeader.split(';').forEach(element => {
             const [tokenName, value] = element.split('=')
-            cookie[tokenName] = value
+            cookie[tokenName.trim()] = value.trim()
         })
     }
 

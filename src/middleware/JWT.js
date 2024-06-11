@@ -14,7 +14,7 @@ const verifyToken = (token) => {
 
 // Create new token including both 
 const signToken = ({userID = null, treasuryID = null}) => {
-    return jwt.sign({user_ID: userID, treasury_ID: treasuryID}, SECRET_KEY, { expiresIn: '1h' })
+    return jwt.sign({user_ID: userID, treasury_ID: treasuryID}, SECRET_KEY, { expiresIn: '5h' })
 }
 
 

@@ -176,6 +176,7 @@ const newUserRegistration = async (req, res) => {
 // Check login credentials and transfer user data
 // User login to the system
 const checkLogin = async (req, res) => {
+    console.log('check user')
     // Initiate response variables
     let errorMessage = null, validate = false, userDetails = null;
 

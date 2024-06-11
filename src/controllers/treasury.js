@@ -29,14 +29,19 @@ const createTreasury = async (req, res) => {
         errorMessage = 'severError'
         throw err
     })
+;
+    const treasuryID = await getLastTreasuryID()
+    // Create treasury Link
+    const treasuryLink = `http://localhost/open_ledger/open_ledgerBack.php?treasury=${btoa(treasuryID)}`
 
     // New treasury instant
     const treasury = new Treasury(
         {
-            treasuryID: await getLastTreasuryID(),
+            treasuryID: treasuryID,
             treasuryName: req.body['treasury_name'],
             description: req.body['description'],   
             coverImageID: pictureID,
+            treasuryLink: treasuryLink,
             globalVisibility: true,
             memberLimit: req.body['member_limit'],
             publicTreasury: req.body['public_treasury'],
@@ -68,7 +73,6 @@ const getParticipantTreasury = async (req, res) => {
     let getProcess = true, errorMessage = null, content = null
     // Extracting user token from the cookies
     const user_token = parseCookies(req).user_token
-
     try {
         // Verify the user_token
         const token = jwt.verify(user_token, SECRET_KEY)

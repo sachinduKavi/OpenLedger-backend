@@ -28,7 +28,7 @@ class User {
 
     // Generate json web token for the user ID
     createUserIDToken() {
-        return jwt.sign({user_ID: this.#userID}, SECRET_KEY, { expiresIn: '1h' })
+        return jwt.sign({user_ID: this.#userID}, SECRET_KEY, { expiresIn: '6h' })
     }
 
 
