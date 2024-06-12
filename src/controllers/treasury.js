@@ -163,10 +163,33 @@ const getTreasuryData = async (req, res) => {
 
 }
 
+// Change treasury group data
+const updateTreasurySettings = async (req, res) => {
+    let procedure = true, errorMessage = null
+    // Verify user token 
+    const [token, jwtError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Token is verified 
+        console.log(token)
+        const user = new Treasurer({userID: token.userID})
+    } else {
+        // Token error
+        procedure = false
+        errorMessage = jwtError
+    }
+
+    res.end(JSON.stringify({
+        procedure: procedure,
+        errorMessage: errorMessage
+    }))
+    
+}
+ 
 
 module.exports = {
     createTreasury,
     getParticipantTreasury,
     verifyTreasury,
-    getTreasuryData
+    getTreasuryData,
+    updateTreasurySettings
 }

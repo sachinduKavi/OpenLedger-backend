@@ -6,15 +6,37 @@ class User {
     #userName 
     #userEmail 
     #passwordHash 
-    #displayPictureID 
+    #dpLink 
+    #displayPictureID
+    #pictureScale
 
-    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null}) {
+    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null}) {
         this.#userID = userID
         this.#userName = userName
-        this.userEmail = userEmail
+        this.#userEmail = userEmail
         this.#passwordHash = passwordHash
-        this.displayPictureID = displayPictureID
+        this.#displayPictureID = displayPictureID
+        this.#dpLink = dpLink
+        this.#pictureScale = pictureScale
     }
+
+    extractJSON() {
+        return {
+            userID: this.#userID,
+            userName: this.#userName,
+            userEmail: this.#userEmail,
+            dpLink: this.#dpLink,
+            pictureScale: this.#pictureScale
+            
+        }
+    }
+
+    
+
+    getUserLevel() {
+        return 0
+    }
+
 
     showPosition() {
         console.log('I am a user')
