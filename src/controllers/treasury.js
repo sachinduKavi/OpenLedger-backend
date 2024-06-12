@@ -7,6 +7,8 @@ const {parseCookies}  = require('../middleware/Cookies')
 const {getLastTreasuryID, getLastPictureID}  = require('../middleware/generateID')
 const {verifyToken, signToken} = require('../middleware/JWT')
 
+const Treasurer = require('../DataModels/Treasurer')
+
 
 // Create new treasury step 01 
 const createTreasury = async (req, res) => {
@@ -163,15 +165,29 @@ const getTreasuryData = async (req, res) => {
 
 }
 
-// Change treasury group data
+// Update treasury data by treasurer
 const updateTreasurySettings = async (req, res) => {
-    let procedure = true, errorMessage = null
+    let procedure = true, errorMessage = null, updatedTreasury = null
     // Verify user token 
     const [token, jwtError] = verifyToken(parseCookies(req).user_token)
     if(token) {
         // Token is verified 
-        console.log(token)
-        const user = new Treasurer({userID: token.userID})
+        // This function is only accessible from treasurer 
+        const user = new Treasurer({userID: token.user_ID})
+        try {
+            // Update value of the treasury
+            await user.updateTreasurySettings(token.treasury_ID, req.body.columnName, req.body.newValue)
+    
+            // Creating new updated treasury instant
+            const treasury = new Treasury({treasuryID: token.treasury_ID})
+            await treasury.fetchFromDatabase()
+    
+            updatedTreasury = treasury.extractJSON()
+        } catch (e) {
+            process = false
+            errorMessage = 'severError'
+        }
+
     } else {
         // Token error
         procedure = false
@@ -180,7 +196,8 @@ const updateTreasurySettings = async (req, res) => {
 
     res.end(JSON.stringify({
         procedure: procedure,
-        errorMessage: errorMessage
+        errorMessage: errorMessage,
+        updatedTreasury: updatedTreasury
     }))
     
 }

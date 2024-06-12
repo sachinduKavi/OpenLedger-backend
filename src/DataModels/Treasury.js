@@ -32,6 +32,7 @@ class Treasury {
     }
 
     // Fill the fields with the data in the database
+    // Fetch values and update the instant from database ....
     async fetchFromDatabase() {
         const [results] = await conn.promise().query('SELECT treasury_name, description, member_limit, link, treasury_link, global_visibility, public_group, current_balance, created_date FROM treasury JOIN image_ref ON treasury.cover_img = image_ref.image_id WHERE treasury_ID = ? LIMIT 1', [this.#treasuryID])
         
@@ -45,6 +46,7 @@ class Treasury {
         this.#publicTreasury = treasuryResults['public_group']
         this.#currentBalance = treasuryResults['current_balance']
         this.#createdDate = treasuryResults['created_date']
+        this.#treasuryLink = treasuryResults['treasury_link']
     }
 
     extractJSON() {
@@ -55,6 +57,7 @@ class Treasury {
             memberLimit: this.#memberLimit,
             coverImageID: this.#coverImageID,
             createdDate: this.#createdDate,
+            globalVisibility: this.#globalVisibility,
             treasuryLink: this.#treasuryLink,
             publicTreasury: this.#publicTreasury,
             ownerID: this.#ownerID,

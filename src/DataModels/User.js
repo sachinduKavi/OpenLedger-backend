@@ -74,7 +74,7 @@ class User {
         this.#displayPictureID = displayPictureID
     }
 
-    getUserId() {
+    getUserID() {
         return this.#userID
     }
 
