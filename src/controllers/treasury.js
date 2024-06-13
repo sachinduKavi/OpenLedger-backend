@@ -224,6 +224,7 @@ const getAllTreasuryParticipants = async (req, res) => {
     } catch (e) {
         procedure = false
         errorMessage = 'serverError'
+        console.log('try error')
     }
 
     res.end(JSON.stringify({
