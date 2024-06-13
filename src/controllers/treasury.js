@@ -78,7 +78,6 @@ const getParticipantTreasury = async (req, res) => {
     try {
         // Verify the user_token
         const token = jwt.verify(user_token, SECRET_KEY)
-        console.log('token', token.user_ID)
         const treasuryArray = await fetchTreasuryParticipants(token.user_ID).catch(err => {
             getProcess = false
             errorMessage = 'databaseFetchError'
@@ -201,6 +200,38 @@ const updateTreasurySettings = async (req, res) => {
     }))
     
 }
+
+
+const getAllTreasuryParticipants = async (req, res) => {
+    let procedure = true, errorMessage = null, content = null // Process variables
+
+    try {
+        // Verifies user token 
+        const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+        if(token) {
+            // Token verified
+            const treasury = new Treasury({treasuryID: token.treasury_ID}) // New treasury instant
+            const participantObjectArray = await treasury.getAllTreasuryParticipants()
+            console.log(participantObjectArray)
+            content = participantObjectArray.map(element => {
+                return {...element.extractJSON(), user_role: element.getPosition()}
+            })
+    } else {
+        // Invalid token 
+        procedure = false
+        errorMessage = tokenError
+    }
+    } catch (e) {
+        procedure = false
+        errorMessage = 'serverError'
+    }
+
+    res.end(JSON.stringify({
+        procedure: procedure,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
  
 
 module.exports = {
@@ -208,5 +239,6 @@ module.exports = {
     getParticipantTreasury,
     verifyTreasury,
     getTreasuryData,
-    updateTreasurySettings
+    updateTreasurySettings,
+    getAllTreasuryParticipants
 }

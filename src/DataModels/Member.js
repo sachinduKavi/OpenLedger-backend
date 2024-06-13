@@ -2,8 +2,14 @@ const User = require('./User')
 
 // Member is the lowest level of user inside the treasury group 
 class Member extends User{
-    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null}) {
-        super({userID: userID, userName: userName, userEmail: userEmail, passwordHash: passwordHash, displayPictureID: displayPictureID, dpLink: dpLink, pictureScale: pictureScale})
+    static position = 'Member'
+
+    getPosition() {
+        return Member.position
+    }
+
+    constructor(params) {
+        super(params)
     }
 
     getUserLevel() {

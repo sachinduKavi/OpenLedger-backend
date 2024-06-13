@@ -2,10 +2,15 @@ const CoTreasurer = require('./CoTreasurer')
 const conn = require('../SQL_Connection')
 
 class Treasurer extends CoTreasurer {
-    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null}) {
-        super({userID: userID, userName: userName, userEmail: userEmail, passwordHash: passwordHash, displayPictureID: displayPictureID, dpLink: dpLink, pictureScale: pictureScale})
+    static position = 'Treasurer'
+
+    getPosition(){
+        return Treasurer.position
     }
 
+    constructor(params) {
+        super(params)
+    }
 
     // Update treasury settings and data
     async updateTreasurySettings(treasuryID, settingName, newValue) {

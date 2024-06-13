@@ -2,6 +2,8 @@ const conn = require('../SQL_Connection')
 const jwt = require('jsonwebtoken')
 const {SECRET_KEY} = require('../middleware/KEYS')
 class User {
+    static position = 'User'
+
     #userID 
     #userName 
     #userEmail 
@@ -9,8 +11,10 @@ class User {
     #dpLink 
     #displayPictureID
     #pictureScale
+    #aboutMe
+    #mobileNumber
 
-    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null}) {
+    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null, aboutMe = null, mobileNumber = null}) {
         this.#userID = userID
         this.#userName = userName
         this.#userEmail = userEmail
@@ -18,6 +22,8 @@ class User {
         this.#displayPictureID = displayPictureID
         this.#dpLink = dpLink
         this.#pictureScale = pictureScale
+        this.#aboutMe = aboutMe
+        this.#mobileNumber = mobileNumber
     }
 
     extractJSON() {
@@ -26,8 +32,9 @@ class User {
             userName: this.#userName,
             userEmail: this.#userEmail,
             dpLink: this.#dpLink,
-            pictureScale: this.#pictureScale
-            
+            pictureScale: this.#pictureScale,
+            aboutMe: this.#aboutMe,
+            mobileNumber: this.#mobileNumber
         }
     }
 
@@ -38,8 +45,8 @@ class User {
     }
 
 
-    showPosition() {
-        console.log('I am a user')
+    getPosition() {
+        return User.position
     }
 
     // Update Database with current data

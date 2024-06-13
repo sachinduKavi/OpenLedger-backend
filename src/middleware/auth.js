@@ -1,3 +1,8 @@
+const Member = require('../DataModels/Member')
+const Chair = require('../DataModels/Chair')
+const CoTreasurer = require('../DataModels/CoTreasurer')
+const Treasurer = require('../DataModels/Treasurer')
+
 const isAuthenticated = (req, res, next) => {
     const authHeader = req.headers.authorization
     console.log("Authorization header: " + authHeader)
@@ -25,5 +30,20 @@ const isClassObject = (obj) => {
 } 
 
 
+const userCategorize = (userRole, userDetails) => {
+    switch(userRole) {
+        case 'Treasurer':
+            return new Treasurer(userDetails)
+        case 'CoTreasurer':
+            return new CoTreasurer(userDetails)
+        case 'Chair':
+            return new Chair(userDetails)
+        case 'Member':
+            return new Member(userDetails)
 
-module.exports = {isAuthenticated, isClassObject}
+    }
+}
+
+
+
+module.exports = {isAuthenticated, isClassObject, userCategorize}

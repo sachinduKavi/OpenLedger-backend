@@ -1,4 +1,5 @@
 const conn = require('../SQL_Connection')
+const {userCategorize} = require('../middleware/auth')
 
 class Treasury {
     // Private Treasury variables
@@ -63,6 +64,38 @@ class Treasury {
             ownerID: this.#ownerID,
             currentBalance: this.#currentBalance
         }
+    }
+
+    // Fetch all treasury participants from the database 
+    // Assign them to relative objects 
+    async getAllTreasuryParticipants() {
+        const [participantsResult] = await conn.promise().query(`SELECT user_name, user.user_ID, link, user_email, mobile_number, about_me, x_axis, y_axis, scale,
+        role FROM user JOIN treasury_participants ON user.user_ID = treasury_participants.user_ID LEFT JOIN image_ref
+        ON user.display_picture = image_ref.image_id WHERE treasury_participants.treasury_ID = ?`, [this.#treasuryID])
+        
+        let objectArray = []
+        participantsResult.forEach((participant) => {
+            // Data is converted to standard format that object can read
+            const temporaryParticipant = {
+                userName: participant['user_name'],
+                userID: participant['user_ID'],
+                dpLink: participant['link'],
+                userEmail: participant['user_email'],
+                mobileNumber: participant['mobile_number'],
+                aboutMe: participant['about_me'],
+                pictureScale: {
+                    x: participant['x_axis'],
+                    y: participant['y_axis'],
+                    scale: participant['scale'],
+                }
+            }
+            // Categorize user into their roles 
+            // Create an instant 
+            const user = userCategorize(participant['role'], temporaryParticipant)
+            objectArray.push(user) // Push the instant to the object array
+        })
+
+        return objectArray
     }
 
 

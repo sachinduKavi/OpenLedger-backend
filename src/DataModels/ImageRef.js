@@ -17,6 +17,16 @@ class ImageRef {
         this.#link = link
     }
 
+    extractJSON() {
+        return {
+            imageID: this.#imageID,
+            xAxis: this.#xAxis,
+            yAxis: this.#yAxis,
+            scale: this.#scale,
+            link: this.#link
+        }
+    }
+
     // Update the sql database with current values in the instant
     async updateDatabase() {
         // Generate a image ID if image ID is not given

@@ -1,8 +1,14 @@
 const Chair = require('./Chair')
 
 class CoTreasurer extends Chair{
-    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null}) {
-        super({userID: userID, userName: userName, userEmail: userEmail, passwordHash: passwordHash, displayPictureID: displayPictureID, dpLink: dpLink, pictureScale: pictureScale})
+    static position = 'CoTreasurer'
+
+    getPosition() {
+        return CoTreasurer.position
+    }
+
+    constructor(params) {
+        super(params)
     }
 
     getUserLevel() {
