@@ -1,17 +1,20 @@
 const {parseCookies} = require('../middleware/Cookies')
 const {verifyToken} = require('../middleware/JWT')
 const LedgerRecord = require('../DataModels/LedgerRecord')
+const Treasury = require('../DataModels/Treasury')
 
 
 
 // Creating new leader record
 const createLedgerRecord = async (req, res) => {
+    console.log('create ledger records')
     let process = true, errorMessage = null // State of the request
     // Extracting user cookies and verify the user JWT token
     const [token, token_error] = verifyToken(parseCookies(req).user_token)
     if(token) {
         // Valid user token
         // Creating new ledger record object from the request body
+        console.log('request body', req.body)
         const ledgerRecord = new LedgerRecord(req.body)
         if(!await ledgerRecord.createNewRecord()) {
             // Record is not created 
@@ -66,7 +69,32 @@ const allLedgerRecords = async (req, res) => {
 }
 
 
+// Fetch ledger categories from the database
+const loadCategories = async (req, res) => {
+    let procedure = true, errorMessage = null, content = null // Procedure status variable
+    // Fetch user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Token is verified 
+        const ledger = new LedgerRecord({treasuryID: token.treasury_ID})
+        content = await ledger.fetchAllLedgerCategories()
+    } else {
+        procedure = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        procedure: procedure,
+        errorMessage: errorMessage,
+        content: content
+    }))
+
+}
+
+
 module.exports = {
     createLedgerRecord,
-    allLedgerRecords
+    allLedgerRecords,
+    loadCategories
 }

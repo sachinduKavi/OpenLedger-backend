@@ -34,7 +34,7 @@ const createTreasury = async (req, res) => {
 ;
     const treasuryID = await getLastTreasuryID()
     // Create treasury Link
-    const treasuryLink = `https://conciliatory-senses.000webhostapp.com/?treasury=${btoa(treasuryID)}`
+    const treasuryLink = `https://conciliatory-senses.000webhostapp.com/open_ledger/open_ledgerBack.php?treasury=${btoa(treasuryID)}`
 
     // New treasury instant
     const treasury = new Treasury(
@@ -233,6 +233,7 @@ const getAllTreasuryParticipants = async (req, res) => {
         content: content
     }))
 }
+
  
 
 module.exports = {

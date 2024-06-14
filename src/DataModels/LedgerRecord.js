@@ -1,7 +1,7 @@
 const Evidence = require('./Evidence')
 const {isClassObject} = require('../middleware/auth')
 const conn = require('../SQL_Connection')
-const {getLastLedgerID} = require('../middleware/generateID')
+const {getLastLedgerID, getLastCategoryID} = require('../middleware/generateID')
 const Treasury = require('./Treasury')
 class LedgerRecord {
     #title
@@ -11,9 +11,9 @@ class LedgerRecord {
     #evidenceArray
     #recordID
     #createdDate
+    #category
 
-
-    constructor({title = null, description = null, amount = null, treasuryID = null, evidenceArray = null, recordID = null, createdDate = null}) {
+    constructor({title = null, description = null, amount = null, treasuryID = null, evidenceArray = [], recordID = null, createdDate = null, category = null}) {
         this.#title = title
         this.#description = description
         this.#amount = amount 
@@ -21,6 +21,7 @@ class LedgerRecord {
         this.#treasuryID = treasuryID
         this.#recordID = recordID
         this.#createdDate = createdDate
+        this.#category = category?.trim()
         
         if (this.#evidenceArray.length > 0 && !isClassObject(this.#evidenceArray[0])) this.#convertToEvidenceObject()
     }
@@ -86,10 +87,27 @@ class LedgerRecord {
         // Separating data and time into two columns
         const dateTime = this.#createdDate.split('#')
 
+        // Check whether the inserted category existed in the database
+        let categoryID = null
+        if(this.#category !== null && this.#category.toString() !== "") {
+            const [categoryResult] = await conn.promise().query('SELECT category_ID FROM ledger_category JOIN ledger ON ledger.category = ledger_category.category_ID WHERE ledger.treasury_ID = ? AND ledger_category.name = ?', [this.#treasuryID, this.#category])
+            console.log('category result', categoryResult)
+
+            if(categoryResult.length === 0) {
+                // New category identified 
+                categoryID = await getLastCategoryID()
+                // Insert new category
+                await conn.promise().query('INSERT INTO ledger_category VALUES (?, ?)', [categoryID, this.#category])
+            } else {
+                categoryID = categoryResult[0]['category_ID']
+            }
+        }
+        
+
         if(this.#recordID === null) this.#recordID = await getLastLedgerID() // Creating ledger record ID
         // Creating new ledger record
-        const [result] = await conn.promise().query('INSERT INTO ledger (record_ID, treasury_ID, title, description, amount, created_date, time) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [this.#recordID, this.#treasuryID, this.#title, this.#description, this.#amount, dateTime[0], dateTime[1]])
+        const [result] = await conn.promise().query('INSERT INTO ledger (record_ID, treasury_ID, title, description, amount, created_date, time, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [this.#recordID, this.#treasuryID, this.#title, this.#description, this.#amount, dateTime[0], dateTime[1], categoryID])
 
         // Create Evidence records
         for(let i = 0; i < this.#evidenceArray.length; i++) {
@@ -104,6 +122,13 @@ class LedgerRecord {
         
         return result.affectedRows > 0
     }   
+
+
+    // Fetch all the categories relevant to the treasury ID
+    async fetchAllLedgerCategories() {
+        const [categoryResult] = await conn.promise().query('SELECT DISTINCT ledger_category.name FROM ledger_category JOIN ledger ON ledger.category = ledger_category.category_ID WHERE ledger.treasury_ID = ?', [this.#treasuryID])
+        return categoryResult.map(element=> element['name'])
+    }
 
 
 
