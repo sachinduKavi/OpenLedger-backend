@@ -82,8 +82,6 @@ class LedgerRecord {
 
     // Creating new ledger record in the SQL database 
     async createNewRecord() {
-        console.log('creating new database record...')
-
         // Separating data and time into two columns
         const dateTime = this.#createdDate.split('#')
 

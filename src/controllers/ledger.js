@@ -7,7 +7,6 @@ const Treasury = require('../DataModels/Treasury')
 
 // Creating new leader record
 const createLedgerRecord = async (req, res) => {
-    console.log('create ledger records')
     let process = true, errorMessage = null // State of the request
     // Extracting user cookies and verify the user JWT token
     const [token, token_error] = verifyToken(parseCookies(req).user_token)
@@ -36,7 +35,6 @@ const createLedgerRecord = async (req, res) => {
 
 // Fetch all ledger records related to the user and treasury
 const allLedgerRecords = async (req, res) => {
-    console.log('all ledger records...')
     let procedure = true, errorMessage = null, content = null // Request state variables
 
     // Extracting user cookies and verify the user JWT token
