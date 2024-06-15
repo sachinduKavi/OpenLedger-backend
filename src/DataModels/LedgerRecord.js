@@ -50,6 +50,7 @@ class LedgerRecord {
             amount: this.#amount,
             treasuryID: this.#treasuryID,
             evidenceArray: evidence,
+            category: this.#category,
             createdDate: this.#createdDate
         }
     }
@@ -58,7 +59,7 @@ class LedgerRecord {
     // Return all the ledger records related to the given treasuryID
     static async fetchAllLedgerRecords(treasuryID) {
         let ledgerArray = [] // Empty ledger records array
-        const [ledgersResult] = await conn.promise().query('SELECT record_ID, title, description, amount, time, created_date FROM ledger WHERE treasury_ID = ? ORDER BY record_ID DESC',
+        const [ledgersResult] = await conn.promise().query('SELECT record_ID, title, description, amount, time, created_date, ledger_category.name FROM ledger JOIN ledger_category ON ledger.category = ledger_category.category_ID WHERE treasury_ID = ? ORDER BY record_ID DESC',
             [treasuryID]
         )
 
@@ -67,6 +68,7 @@ class LedgerRecord {
             const ledger = new LedgerRecord({
                 treasuryID: treasuryID,
                 recordID: element.record_ID,
+                category: element.name,
                 title: element.title,
                 description: element.description,
                 amount: element.amount,
