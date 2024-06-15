@@ -92,7 +92,6 @@ class LedgerRecord {
         let categoryID = null
         if(this.#category !== null && this.#category.toString() !== "") {
             const [categoryResult] = await conn.promise().query('SELECT category_ID FROM ledger_category JOIN ledger ON ledger.category = ledger_category.category_ID WHERE ledger.treasury_ID = ? AND ledger_category.name = ?', [this.#treasuryID, this.#category])
-            console.log('category result', categoryResult)
 
             if(categoryResult.length === 0) {
                 // New category identified 

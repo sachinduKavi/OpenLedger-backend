@@ -24,9 +24,7 @@ const createLedgerRecord = async (req, res) => {
             // Creating new status instant
             const status = new Status({treasuryID: token.treasury_ID, intervenerID: token.user_ID, modification: "New ledger record is added", dateTime: dateTime[0] + " " + dateTime[1]})
             await status.buildNewID() // Creating new status record ID
-
             await status.createStatusRecord() // Creating record in database
-
         }
         
 
