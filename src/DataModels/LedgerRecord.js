@@ -12,6 +12,7 @@ class LedgerRecord {
     #recordID
     #createdDate
     #category
+    #modifyDateTime
 
     constructor({title = null, description = null, amount = null, treasuryID = null, evidenceArray = [], recordID = null, createdDate = null, category = null}) {
         this.#title = title
@@ -108,6 +109,7 @@ class LedgerRecord {
         // Creating new ledger record
         const [result] = await conn.promise().query('INSERT INTO ledger (record_ID, treasury_ID, title, description, amount, created_date, time, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [this.#recordID, this.#treasuryID, this.#title, this.#description, this.#amount, dateTime[0], dateTime[1], categoryID])
+        this.#modifyDateTime = dateTime
 
         // Create Evidence records
         for(let i = 0; i < this.#evidenceArray.length; i++) {
@@ -130,9 +132,13 @@ class LedgerRecord {
         return categoryResult.map(element=> element['name'])
     }
 
-
+    
 
     // Getters and Setters
+    getModifiedDateTime() {
+        return this.#modifyDateTime
+    }
+
     getCreatedDate(){
         return this.#createdDate
     }

@@ -46,7 +46,18 @@ const getLastTreasuryID = async  () => {
 }
 
 
-// Get the last used treasury ID
+// Get the last used status ID
+const getStatusID = async  () => {
+    const [stateID] = await conn.promise().query('SELECT status_ID FROM treasury_status ORDER BY status_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (stateID.length == 0)
+        ? generateID('ST00')
+        : generateID(userID[0]['status_ID'])
+}
+
+
+// Get the last used ledger ID
 const getLastLedgerID = async  () => {
     const [userID] = await conn.promise().query('SELECT record_ID FROM ledger ORDER BY record_ID DESC LIMIT 1').catch(err => {
         throw err
@@ -72,5 +83,6 @@ module.exports = {
     getLastPictureID,
     getLastLedgerID,
     getEvidenceID,
-    getLastCategoryID
+    getLastCategoryID,
+    getStatusID
 }
