@@ -40,6 +40,14 @@ class Status {
             dateTime: this.#dateTime
         }
     }
+
+
+    // Getters and Setters
+    getStatusID() {
+        return this.#statusID
+    }
+
+    
 }
 
 module.exports = Status
