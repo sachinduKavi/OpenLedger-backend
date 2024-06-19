@@ -158,7 +158,8 @@ const newUserRegistration = async (req, res) => {
                 userEmail: req.body['userEmail'],
                 pictureScale: imageScale,
                 dpLink: req.body['dpLink']
-            }
+            },
+            userSignature: ''
         }))
     } catch(e) {
         // Error occur during the process
@@ -206,7 +207,8 @@ const checkLogin = async (req, res) => {
                             x: userResults[0]['x_axis'],
                             y: userResults[0]['y_axis'],
                             scale: userResults[0]['scale']
-                        }
+                        },
+                        userSignature: userResults[0]['signature']
                     }
                     
                 }

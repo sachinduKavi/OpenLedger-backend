@@ -13,8 +13,9 @@ class User {
     #pictureScale
     #aboutMe
     #mobileNumber
+    #userSignature
 
-    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null, aboutMe = null, mobileNumber = null}) {
+    constructor({userID = null, userName = null, userEmail = null, passwordHash = null, displayPictureID = null, dpLink = null, pictureScale = null, aboutMe = null, mobileNumber = null, userSignature = null}) {
         this.#userID = userID
         this.#userName = userName
         this.#userEmail = userEmail
@@ -24,6 +25,7 @@ class User {
         this.#pictureScale = pictureScale
         this.#aboutMe = aboutMe
         this.#mobileNumber = mobileNumber
+        this.#userSignature = userSignature
     }
 
     extractJSON() {
@@ -34,7 +36,8 @@ class User {
             dpLink: this.#dpLink,
             pictureScale: this.#pictureScale,
             aboutMe: this.#aboutMe,
-            mobileNumber: this.#mobileNumber
+            mobileNumber: this.#mobileNumber,
+            userSignature: this.#userSignature
         }
     }
 
@@ -58,6 +61,16 @@ class User {
     // Generate json web token for the user ID
     createUserIDToken() {
         return jwt.sign({user_ID: this.#userID}, SECRET_KEY, { expiresIn: '6h' })
+    }
+
+
+    // Getters and setters
+    getUserSignature() {
+        return this.#userSignature
+    }
+
+    setUserSignature(userSignature) {
+        this.#userSignature = userSignature
     }
 
 

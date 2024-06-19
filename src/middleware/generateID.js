@@ -53,7 +53,7 @@ const getStatusID = async  () => {
     })
     return (stateID.length == 0)
         ? generateID('ST00')
-        : generateID(userID[0]['status_ID'])
+        : generateID(stateID[0]['status_ID'])
 }
 
 
