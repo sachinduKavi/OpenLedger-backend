@@ -78,11 +78,32 @@ const getEvidenceID = async  () => {
         : generateID(userID[0]['evidence_ID'])
 }
 
+// Get the last used estimation ID
+const getEstimationID = async  () => {
+    const [estimationID] = await conn.promise().query('SELECT estimation_ID FROM estimation ORDER BY estimation_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (estimationID.length == 0)
+        ? generateID('ES00')
+        : generateID(estimationID[0]['estimation_ID'])
+}
+
+const getExpenseID = async  () => {
+    const [expenseID] = await conn.promise().query('SELECT expense_ID FROM expense ORDER BY expense_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (expenseID.length == 0)
+        ? generateID('ES00')
+        : generateID(expenseID[0]['expense_ID'])
+}
+
 module.exports = {
     getLastTreasuryID,
     getLastPictureID,
     getLastLedgerID,
     getEvidenceID,
+    getExpenseID,
+    getEstimationID,
     getLastCategoryID,
     getStatusID
 }

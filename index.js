@@ -5,6 +5,7 @@ const fleetApp = new Fleet() // Create instant of the fleet custom package
 const userRouter = require('./src/routes/user')
 const treasuryRouter = require('./src/routes/treasury')
 const ledgerRouter = require('./src/routes/ledger')
+const estimationRouter = require('./src/routes/estimation')
 
 
 const PORT = 3500
@@ -21,6 +22,8 @@ fleetApp.use('/user', userRouter)
 fleetApp.use('/treasury', treasuryRouter)
 
 fleetApp.use('/ledger', ledgerRouter)
+
+fleetApp.use('/estimation', estimationRouter)
 
 
 
