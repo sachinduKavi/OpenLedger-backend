@@ -93,7 +93,7 @@ const getExpenseID = async  () => {
         throw err
     })
     return (expenseID.length == 0)
-        ? generateID('ES00')
+        ? generateID('EX00')
         : generateID(expenseID[0]['expense_ID'])
 }
 

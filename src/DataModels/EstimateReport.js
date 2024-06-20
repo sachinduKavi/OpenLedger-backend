@@ -32,7 +32,7 @@ class EstimateReport {
 
     #convertToExpenseObject() {
         this.#expenseArray = this.#expenseArray.map((element) => {
-            return new Expense({itemOfWork: element.itemOfWork, quantity: element.quantity, unit: element.unit, rate: element.rate})
+            return new Expense({itemOfWork: element.itemOfWork, quantity: element.quantity, unit: element.unit, rate: element.rate, expenseID: element.expenseID})
         })
     }
 
@@ -55,6 +55,7 @@ class EstimateReport {
     // Create record if the record dose not present in the database
     // IF it in the database record will be updated with new data
     async saveEstimateReport(treasuryID, userID) {
+        console.log('estimation ID', this.#estimationID)
         if(this.#estimationID === 'AUTO') {
             // New estimation record in database
             this.#estimationID = await getEstimationID()
@@ -68,11 +69,20 @@ class EstimateReport {
                 [userID, this.#description, this.#name, this.#insuranceDate, this.#status, this.#estimationID]
             )
 
+            // Removing previously added expense records 
+            await Expense.deleteExpenseArray(this.#estimationID)
         }
 
         // Trigger to update data in expense table
         for(const element of this.#expenseArray) {
             await element.saveExpense(this.#estimationID)
+        }
+
+        // Delete all the signatures related to estimation ID
+        await conn.promise().query('DELETE FROM report_signature WHERE report_ID = ?', [this.#estimationID])
+        // Insert New signature array
+        for(const signature of this.#signatureArray) {
+            await conn.promise().query('INSERT INTO report_signature(report_ID, signature) VALUES(?, ?)', [this.#estimationID, signature])
         }
     }
 

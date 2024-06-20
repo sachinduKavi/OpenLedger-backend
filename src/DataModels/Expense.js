@@ -31,20 +31,20 @@ class Expense {
         return this.#quantity * this.#rate
     }
 
+    // Delete all the expense related to estimation ID
+    static async deleteExpenseArray(estimateID) {
+         await conn.promise().query('DELETE FROM expense WHERE estimation_ID = ?', [estimateID])
+    }
+
     // Update database with data
     async saveExpense(estimateID) {
-        if(this.#expenseID === null) {
-            // Create new record in the database
-            this.#expenseID = await getExpenseID()
-            await conn.promise().query('INSERT INTO expense(expense_ID, estimation_ID, quantity, unit, item, rate) VALUES(?, ?, ?, ?, ?, ?)',
+        console.log('expense ID', this.#expenseID)
+    
+        if(this.#expenseID === null) this.#expenseID = await getExpenseID()
+        // Create new record in the database
+        await conn.promise().query('INSERT INTO expense(expense_ID, estimation_ID, quantity, unit, item, rate) VALUES(?, ?, ?, ?, ?, ?)',
                 [this.#expenseID, estimateID, this.#quantity, this.#unit, this.#itemOfWork, this.#rate]
             )
-        } else {
-            // Record exist in database update it values
-            await conn.promise().query('UPDATE expense SET quantity = ?, unit = ?, item = ?, rate = ?',
-                [this.#quantity, this.#unit, this.#itemOfWork, this.#rate, this.#expenseID]
-            )
-        }
     }
 
     // Getters and Setters
