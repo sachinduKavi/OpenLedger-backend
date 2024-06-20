@@ -84,6 +84,8 @@ class EstimateReport {
         for(const signature of this.#signatureArray) {
             await conn.promise().query('INSERT INTO report_signature(report_ID, signature) VALUES(?, ?)', [this.#estimationID, signature])
         }
+
+        return this.#estimationID // Return the newly generated estimation ID to front end
     }
 
 

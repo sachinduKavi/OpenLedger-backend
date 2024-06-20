@@ -5,13 +5,14 @@ const EstimateReport = require('../DataModels/EstimateReport')
 
 
 const saveEstimation = async (req, res) => {
-    let proceed = true, errorMessage = null
+    console.log('save estimation')
+    let proceed = true, errorMessage = null, estimationID
     // JWT token verification 
     const [token, jwtError] = verifyToken(parseCookies(req).user_token)
     try{
         if(token) {
             const estimate = new EstimateReport(req.body) // New instant of estimate
-            await estimate.saveEstimateReport(token.treasury_ID, token.user_ID)
+            estimationID = await estimate.saveEstimateReport(token.treasury_ID, token.user_ID)
     
         } else {
             // Token error
@@ -23,10 +24,11 @@ const saveEstimation = async (req, res) => {
         proceed = false
     }
     
-    
+
     res.end(JSON.stringify({
         proceed: proceed,
         errorMessage: errorMessage,
+        estimationID: estimationID
     }))
 }
 
