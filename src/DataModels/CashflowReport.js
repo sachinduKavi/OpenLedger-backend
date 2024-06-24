@@ -1,11 +1,12 @@
-const LedgerRecord = require('./LedgerRecord')
 const {getCashflowReportID} = require('../middleware/generateID')
 const conn = require('../SQL_Connection')
+const {sqlToStringDate} = require('../middleware/format')
 
 class CashflowReportModel {
     #reportID 
     #treasuryID
     #insuranceDate
+    #publisher
     #documentType
     #rangeStart
     #rangeEnd
@@ -13,19 +14,20 @@ class CashflowReportModel {
     #expenseArray
     #status
 
-    constructor({reportID = 'AUTO', treasuryID = null, insuranceDate = null, documentType = null, rangeStart = null, rangeEnd = null, incomeArray = [], status = null, expenseArray = []}) {
+    constructor({reportID = 'AUTO', treasuryID = null, insuranceDate = null, documentType = null, rangeStart = null, rangeEnd = null, incomeArray = [], status = 'DETAILED', expenseArray = [], publisher}) {
         this.#reportID = reportID,
         this.#treasuryID = treasuryID,
         this.#insuranceDate = insuranceDate
         this.#documentType = documentType
         this.#rangeStart = rangeStart
+        this.#publisher = publisher
         this.#rangeEnd = rangeEnd
         this.#incomeArray = incomeArray
         this.#expenseArray = expenseArray
         this.#status = status
 
-        if (this.#incomeArray.length > 0 && !isClassObject(this.#incomeArray[0])) this.#convertToLedgerEvidenceIncome()
-        if (this.#expenseArray.length > 0 && !isClassObject(this.#expenseArray[0])) this.#convertToLedgerEvidenceExpense()
+        // if (this.#incomeArray.length > 0 && !isClassObject(this.#incomeArray[0])) this.#convertToLedgerEvidenceIncome()
+        // if (this.#expenseArray.length > 0 && !isClassObject(this.#expenseArray[0])) this.#convertToLedgerEvidenceExpense()
     }
 
     extractJSON() {
@@ -37,30 +39,12 @@ class CashflowReportModel {
             rangeStart: this.#rangeStart,
             rangeEnd: this.#rangeEnd,
             status: this.#status,
-            incomeArray: this.#incomeArray.map(element => {
-                return element.extractJSON()
-            }),
-            expenseArray: this.#expenseArray.map(element => {
-                return element.extractJSON()
-            })
+            publisher: this.#publisher,
+            incomeArray: this.#incomeArray,
+            expenseArray: this.#expenseArray
         }
     }
 
-    #convertToLedgerEvidenceIncome() {
-        let tempObjectArray = []
-        this.#incomeArray.forEach(element => {
-            tempObjectArray.push(new LedgerRecord(element))
-        });
-        this.#incomeArray = tempObjectArray
-    }
-
-    #convertToLedgerEvidenceExpense() {
-        let tempObjectArray = []
-        this.#expenseArray.forEach(element => {
-            tempObjectArray.push(new LedgerRecord(element))
-        });
-        this.#expenseArray = tempObjectArray
-    }
 
 
     // Get values ledger records from the database
@@ -74,41 +58,92 @@ class CashflowReportModel {
             )
         } else {
             // Update the cashflow record
-            await conn.promise().query('UPDATE cashflow_reportID SET publisher_ID = ?, document_type = ?, published_date = ?, range_s = ?, range_e = ?, status = ?', 
-                [publisherID, this.#documentType, this.#insuranceDate, this.#rangeStart, this.#rangeEnd, this.#status]
+            await conn.promise().query('UPDATE cashflow_report SET publisher_ID = ?, document_type = ?, published_date = ?, range_s = ?, range_e = ?, status = ?', 
+                [publisherID, this.#documentType, this.#insuranceDate, sqlToStringDate(this.#rangeStart), sqlToStringDate(this.#rangeEnd), this.#status]
             )
         }
 
+        await this.updateCashflowValues()
+            
+        await this.getCashflowLedgerRecords(treasuryID)
+        
+    }
+
+    // Update cashflow object 
+    async updateCashflowValues() {
+        // Update record data from the database
+        const [cashflowResults] = await conn.promise().query('SELECT treasury_ID, document_type, published_date, range_s, range_e, status, user_name FROM cashflow_report JOIN user ON user.user_ID = cashflow_report.publisher_ID WHERE cashflow_reportID = ? LIMIT 1',
+            [this.#reportID]
+        )
+        this.#treasuryID = cashflowResults[0]['treasury_ID']
+        this.#documentType = cashflowResults[0]['document_type']
+        this.#insuranceDate = sqlToStringDate(cashflowResults[0]['published_date'])
+        this.#rangeStart = cashflowResults[0]['range_s']
+        this.#rangeEnd = cashflowResults[0]['range_e']
+        this.#status = cashflowResults[0]['status']
+        this.#publisher = cashflowResults[0]['user_name']
+    }
+
+
+    // Get values from the ledger according to the cashflow record
+    async getCashflowLedgerRecords(treasuryID) {
         // Fetch records from the ledger records
-        const [ledgerRecord] = await conn.promise().query('SELECT record_ID, title, amount, created_date, category, name FROM ledger LEFT JOIN ledger_category ON ledger_category.category_ID = ledger.category WHERE created_date BETWEEN ? AND ? AND treasury_ID = ? ORDER BY category_ID', 
+        const [ledgerRecord] = await conn.promise().query('SELECT record_ID, title, amount, created_date, category, name FROM ledger LEFT JOIN ledger_category ON ledger_category.category_ID = ledger.category WHERE created_date BETWEEN ? AND ? AND treasury_ID = ? ORDER BY category_ID DESC', 
             [this.#rangeStart, this.#rangeEnd, treasuryID]
         )
 
-        this.#expenseArray = []
-        this.#incomeArray = [] // Reset values
+        this.#expenseArray = {}
+        this.#incomeArray = {}// Reset values
+        let preIncomeCat = 'null', preExpCat = 'null'
+        let expenseCat = []
+        let incomeCat = []
         // Incrementing values to expenseArray in incomeArray
         ledgerRecord.forEach(element => {
-            if(element.amount > 0) {
+            if(element.amount >= 0) {
                 // Positive value
-                this.#incomeArray.push(new LedgerRecord({
+                if(preIncomeCat !== 'null' && element.category !== preIncomeCat) {
+                    incomeCat = []
+                } else {
+
+                }
+
+                incomeCat.push({
                     recordID: element.record_ID,
                     title: element.title,
-                    createdDate: element.created_date?.toString().slice(0, 10),
                     amount: element.amount,
-                    category: element.category
-                }))
+                    createdDate: sqlToStringDate(element.created_date),
+                    categoryName: element.name,
+                    categoryID: element.category
+                })
+
+                this.#incomeArray[element.name?.replace(' ', '_')??'Other'] = incomeCat
+
+                preIncomeCat = element.category
+                
             } else {
                 // Negative value
-                this.#expenseArray.push(new LedgerRecord({
+                if(preExpCat !== 'null' && element.category !== preExpCat) {
+                    expenseCat = []
+                } else {
+
+                }
+
+                expenseCat.push({
                     recordID: element.record_ID,
                     title: element.title,
-                    createdDate: element.created_date?.toString().slice(0, 10),
                     amount: element.amount,
-                    category: element.category
-                }))
+                    createdDate: sqlToStringDate(element.created_date),
+                    categoryName: element.name,
+                    categoryID: element.category
+                })
+
+                this.#expenseArray[element.name?.replace(' ', '_')??'Other'] = expenseCat
+
+                preExpCat = element.category
             }
         })
-        console.log(ledgerRecord)
+
+        
     }
 
 
