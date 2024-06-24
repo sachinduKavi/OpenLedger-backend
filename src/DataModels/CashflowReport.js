@@ -25,16 +25,11 @@ class CashflowReportModel {
         this.#incomeArray = incomeArray
         this.#expenseArray = expenseArray
         this.#status = status
-
-        
-
         // if (this.#incomeArray.length > 0 && !isClassObject(this.#incomeArray[0])) this.#convertToLedgerEvidenceIncome()
         // if (this.#expenseArray.length > 0 && !isClassObject(this.#expenseArray[0])) this.#convertToLedgerEvidenceExpense()
     }
 
     extractJSON() {
-
-        console.log('in end ', this.#rangeEnd, this.#rangeStart)
         return {
             reportID: this.#reportID,
             treasuryID:  this.#treasuryID,
@@ -53,7 +48,6 @@ class CashflowReportModel {
 
     // Get values ledger records from the database
     async saveCashflowReport(publisherID, treasuryID) {
-        console.log('in before ', this.#rangeEnd, this.#rangeStart)
         // Check whether the record is new
         if (this.#reportID === 'AUTO') {
             this.#reportID = await getCashflowReportID() // Generate new cashflow ID
@@ -64,10 +58,10 @@ class CashflowReportModel {
         } else {
             // Update the cashflow record
             await conn.promise().query('UPDATE cashflow_report SET publisher_ID = ?, document_type = ?, published_date = ?, range_s = ?, range_e = ?, status = ? WHERE cashflow_reportID = ?', 
-                [publisherID, this.#documentType, this.#insuranceDate, sqlToStringDate(this.#rangeStart), sqlToStringDate(this.#rangeEnd), this.#status, this.#reportID]
+                [publisherID, this.#documentType, this.#insuranceDate, this.#rangeStart, this.#rangeEnd, this.#status, this.#reportID]
             )
         }
-        console.log('report ID', this.#reportID)
+        
         await this.updateCashflowValues()
             
         await this.getCashflowLedgerRecords(treasuryID)
@@ -77,20 +71,18 @@ class CashflowReportModel {
     // Update cashflow object 
     async updateCashflowValues() {
         // Update record data from the database
-        const [cashflowResults] = await conn.promise().query('SELECT treasury_ID, document_type, published_date, range_s, range_e, status, user_name FROM cashflow_report JOIN user ON user.user_ID = cashflow_report.publisher_ID WHERE cashflow_reportID = ? LIMIT 1',
+        const [cashflowResults] = await conn.promise().query('SELECT treasury_ID, document_type, CONVERT_TZ(published_date, "+00:00", "+05:30") AS published_date, CONVERT_TZ(range_e, "+00:00", "+05:30") AS range_e, CONVERT_TZ(range_s, "+00:00", "+05:30") AS range_s, status, user_name FROM cashflow_report JOIN user ON user.user_ID = cashflow_report.publisher_ID WHERE cashflow_reportID = ? LIMIT 1',
             [this.#reportID]
         )
-        console.log('in after ', this.#rangeEnd, this.#rangeStart)
+        
         
         this.#treasuryID = cashflowResults[0]['treasury_ID']
         this.#documentType = cashflowResults[0]['document_type']
         this.#insuranceDate = sqlToStringDate(cashflowResults[0]['published_date'])
-        this.#rangeStart = cashflowResults[0]['range_s']
-        this.#rangeEnd = cashflowResults[0]['range_e']
+        this.#rangeStart = sqlToStringDate(cashflowResults[0]['range_s'])
+        this.#rangeEnd = sqlToStringDate(cashflowResults[0]['range_e'])
         this.#status = cashflowResults[0]['status']
         this.#publisher = cashflowResults[0]['user_name']
-
-        console.log('in after ', this.#rangeEnd, this.#rangeStart)
     }
 
 
@@ -100,8 +92,6 @@ class CashflowReportModel {
         const [ledgerRecord] = await conn.promise().query('SELECT record_ID, title, amount, created_date, category, name FROM ledger LEFT JOIN ledger_category ON ledger_category.category_ID = ledger.category WHERE created_date BETWEEN ? AND ? AND treasury_ID = ? ORDER BY category_ID DESC', 
             [this.#rangeStart, this.#rangeEnd, treasuryID]
         )
-
-        console.log('values', ledgerRecord, [this.#rangeStart, this.#rangeEnd, treasuryID])
 
         this.#expenseArray = {}
         this.#incomeArray = {}// Reset values

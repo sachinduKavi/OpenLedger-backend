@@ -2,9 +2,10 @@ const sqlTOJson = (arrayObject) => {
 
 }
 
-const sqlToStringDate = () => {
+const sqlToStringDate = (value) => {
     // Create a Date object from the ISO string
-    const date = new Date("2024-06-19T18:30:00.000Z")
+    const date = new Date(value)
+
 
     // Extract the year, month, and day
     const year = date.getUTCFullYear()
