@@ -31,7 +31,36 @@ const saveCashflowReport = async (req, res) => {
 }
 
 
+const loadAllCashflow = async (req, res) => {
+    console.log('load all cashflow')
+    let proceed = true, errorMessage = null, content = null
+
+    // verify user token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Token is verified
+        const cashflowInstances = await CashflowReportModel.loadAllCashflowReports(token.treasury_ID)
+        // Convert to JSON object list
+        content = cashflowInstances.map(element => {
+            return element.extractJSON()
+        })
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
+
 
 module.exports = {
-    saveCashflowReport
+    saveCashflowReport,
+    loadAllCashflow
 }

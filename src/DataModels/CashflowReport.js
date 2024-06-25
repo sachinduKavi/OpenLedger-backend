@@ -13,8 +13,9 @@ class CashflowReportModel {
     #incomeArray
     #expenseArray
     #status
+    #signatureArray
 
-    constructor({reportID = 'AUTO', treasuryID = null, insuranceDate = null, documentType = null, rangeStart = null, rangeEnd = null, incomeArray = [], status = 'DETAILED', expenseArray = [], publisher}) {
+    constructor({reportID = 'AUTO', treasuryID = null, insuranceDate = null, documentType = null, rangeStart = null, rangeEnd = null, incomeArray = [], status = 'DETAILED', expenseArray = [], publisher, signatureArray = []}) {
         this.#reportID = reportID,
         this.#treasuryID = treasuryID,
         this.#insuranceDate = insuranceDate
@@ -25,6 +26,7 @@ class CashflowReportModel {
         this.#incomeArray = incomeArray
         this.#expenseArray = expenseArray
         this.#status = status
+        this.#signatureArray = signatureArray
         // if (this.#incomeArray.length > 0 && !isClassObject(this.#incomeArray[0])) this.#convertToLedgerEvidenceIncome()
         // if (this.#expenseArray.length > 0 && !isClassObject(this.#expenseArray[0])) this.#convertToLedgerEvidenceExpense()
     }
@@ -40,7 +42,8 @@ class CashflowReportModel {
             status: this.#status,
             publisher: this.#publisher,
             incomeArray: this.#incomeArray,
-            expenseArray: this.#expenseArray
+            expenseArray: this.#expenseArray,
+            signatureArray: this.#signatureArray
         }
     }
 
@@ -60,7 +63,13 @@ class CashflowReportModel {
             await conn.promise().query('UPDATE cashflow_report SET publisher_ID = ?, document_type = ?, published_date = ?, range_s = ?, range_e = ?, status = ? WHERE cashflow_reportID = ?', 
                 [publisherID, this.#documentType, this.#insuranceDate, this.#rangeStart, this.#rangeEnd, this.#status, this.#reportID]
             )
+            // Remove signatures from the database
+            await conn.promise().query('DELETE FROM report_signature WHERE report_ID = ?', [this.#reportID])
         }
+
+        // Insert new signature array
+        for(const signature of this.#signatureArray)
+            await conn.promise().query('INSERT INTO report_signature (report_ID, signature) VALUES (?, ?)', [this.#reportID, signature])
         
         await this.updateCashflowValues()
             
@@ -146,7 +155,33 @@ class CashflowReportModel {
     }
 
 
+    static async loadAllCashflowReports(treasuryID) {
+        const [cashflowList] = await conn.promise().query('SELECT cashflow_reportID, user_name, document_type, CONVERT_TZ(published_date, "+00:00", "+05:30") AS published_date, CONVERT_TZ(range_s, "+00:00", "+05:30") AS range_s, CONVERT_TZ(range_e, "+00:00", "+05:30") AS range_e, status FROM cashflow_report JOIN user ON user.user_ID = cashflow_report.publisher_ID WHERE cashflow_report.treasury_ID = ?', [treasuryID])
+        // Converting db results to cashflow instant
+        return cashflowList.map(element => {
+            return new CashflowReportModel({
+                reportID: element.cashflow_reportID,
+                publisher: element.user_name,
+                documentType: element.document_type,
+                insuranceDate: sqlToStringDate(element.published_date),
+                rangeStart: sqlToStringDate(element.range_s),
+                rangeEnd: sqlToStringDate(element.range_e),
+                status: element.status
+            })
+        })
+    }
+
+
     // Getters and Setters
+    getSignatureArray() {
+        return this.#signatureArray
+    }
+
+    setSignatureArray(signatureArray) {
+        this.#signatureArray = signatureArray
+    }
+
+
     getStatus() {
         return this.#status
     }
