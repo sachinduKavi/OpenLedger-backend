@@ -59,8 +59,36 @@ const loadAllCashflow = async (req, res) => {
 }
 
 
+// Fetch all the cashflow data for specific record
+const getCashflowReport = async (req, res) => {
+    let proceed = true, content = null, errorMessage = null
+
+    // Verify token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Token is verified
+        const cashflow = new CashflowReportModel({reportID: req.body.reportID}) // Creating new cashflow instant
+        await cashflow.fetchValuesFromDatabase(token.treasury_ID) // Values are fetched from the database
+        content = cashflow.extractJSON()
+    } else {
+        // Invalid token 
+        errorMessage = tokenError
+        proceed = false
+    }
+
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
+
 
 module.exports = {
     saveCashflowReport,
-    loadAllCashflow
+    loadAllCashflow,
+    getCashflowReport
 }
