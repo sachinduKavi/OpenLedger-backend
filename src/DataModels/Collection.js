@@ -66,6 +66,14 @@ class Collection {
         } else {
             // Update existing record
         }
+
+
+        // Creating collection participant records
+        for(const element of this.participantArray) {
+            await conn.promise().query('INSERT INTO collection_participant (collection_ID, user_ID, amount, paid_state, last_update, auto_assigned) VALUES(?, ?, ?, ?, ?, ?)', 
+                [this.#collectionID, element.userID, element.amount, element.state, element.lastUpdate, element.autoAssigned]
+            )
+        }
     }
 
 
