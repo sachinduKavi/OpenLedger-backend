@@ -7,6 +7,7 @@ const treasuryRouter = require('./src/routes/treasury')
 const ledgerRouter = require('./src/routes/ledger')
 const estimationRouter = require('./src/routes/estimation')
 const cashflowRouter = require('./src/routes/cashflow')
+const collectionRouter = require('./src/routes/collection')
 
 const PORT = 3500
 
@@ -26,6 +27,8 @@ fleetApp.use('/ledger', ledgerRouter)
 fleetApp.use('/estimation', estimationRouter)
 
 fleetApp.use('/cashflow', cashflowRouter)
+
+fleetApp.use('/collection', collectionRouter)
 
 
 

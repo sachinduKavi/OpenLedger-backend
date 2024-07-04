@@ -107,6 +107,16 @@ const getCashflowReportID = async  () => {
         : generateID(cashID[0]['cashflow_reportID'])
 }
 
+// Generate cash flow report ID
+const getCollectionID = async  () => {
+    const [collectionID] = await conn.promise().query('SELECT collection_ID FROM collection ORDER BY collection_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (collectionID.length == 0)
+        ? generateID('CL00')
+        : generateID(collectionID[0]['collection_ID'])
+}
+
 module.exports = {
     getLastTreasuryID,
     getLastPictureID,
@@ -116,5 +126,6 @@ module.exports = {
     getEstimationID,
     getLastCategoryID,
     getStatusID,
-    getCashflowReportID
+    getCashflowReportID,
+    getCollectionID
 }
