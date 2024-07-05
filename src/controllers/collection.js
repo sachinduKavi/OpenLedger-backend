@@ -6,7 +6,6 @@ const Collection = require('../DataModels/Collection')
 
 // Create new collection or update values of existing collections
 const saveCollection = async (req, res) => {
-    console.log('collection is working')
     let proceed = true, errorMessage = null, content = null // Process variables
     
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)

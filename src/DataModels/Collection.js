@@ -35,6 +35,8 @@ class Collection {
         this.#publisher = publisher
         this.participantArray = participantArray
         this.#manualAssigned = manualAssigned
+
+
     }
 
 
@@ -71,8 +73,8 @@ class Collection {
             
         } else {
             // Update existing record
-            await conn.promise().query('UPDATE collection SET collection_name = ?, publisher = ?, amount = ?, treasury_allocation = ?, published_date = ?, deadline = ?, status = ?, treasury_ID = ?, description = ?', 
-                [this.#collectionName, this.#publisher, this.#amount, this.#treasuryAllocation, this.#publishedDate, this.#deadline, this.#status, treasuryID, this.#description]
+            await conn.promise().query('UPDATE collection SET collection_name = ?, publisher = ?, amount = ?, treasury_allocation = ?, published_date = ?, deadline = ?, status = ?, treasury_ID = ?, description = ? WHERE collection_ID = ?', 
+                [this.#collectionName, this.#publisher, this.#amount, this.#treasuryAllocation, this.#publishedDate, this.#deadline, this.#status, treasuryID, this.#description, this.#collectionID]
             )
 
             // Remove collection participants record
@@ -101,7 +103,7 @@ class Collection {
             [this.#collectionID]
         )
 
-        this.#collectionName = collectionResult[0].collection_ID
+        this.#collectionName = collectionResult[0].collection_name
         this.#publisherName = collectionResult[0].user_name
         this.#publisher = collectionResult[0].publisher
         this.#amount = collectionResult[0].amount
