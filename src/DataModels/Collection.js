@@ -1,5 +1,8 @@
 const conn = require('../SQL_Connection')
+const { sqlToStringDate } = require('../middleware/format')
 const {getCollectionID} = require('../middleware/generateID')
+
+
 
 class Collection {
     #collectionID
@@ -12,12 +15,13 @@ class Collection {
     #status
     #publishedDate
     #deadline
+    #publisherName
     participantArray
     #manualAssigned
 
     static autoAssignCount = 0
 
-    constructor({collectionID = 'AUTO', collectionName = null, amount = 0, treasuryAllocation = 0, description = null, publishedDate = null, deadline = null, participantArray = [], manualAssigned = 0, publisher = null, status = 'DRAFT'}) {
+    constructor({collectionID = 'AUTO', collectionName = null, amount = 0, treasuryAllocation = 0, description = null, publishedDate = null, deadline = null, participantArray = [], manualAssigned = 0, publisher = null, status = 'DRAFT', publisherName = null}) {
         this.#collectionID = collectionID
         this.#collectionName = collectionName
         this.#amount = amount
@@ -27,6 +31,7 @@ class Collection {
         this.#publishedDate = publishedDate
         this.#deadline = deadline
         this.#status = status
+        this.#publisherName = publisherName
         this.#publisher = publisher
         this.participantArray = participantArray
         this.#manualAssigned = manualAssigned
@@ -46,6 +51,7 @@ class Collection {
             publishedDate: this.#publishedDate,
             deadline: this.#deadline,
             publisher: this.#publisher,
+            publisherName: this.#publisherName,
             status: this.#status,
             manualAssigned: this.#manualAssigned,
             participantArray: this.participantArray
@@ -65,6 +71,12 @@ class Collection {
             
         } else {
             // Update existing record
+            await conn.promise().query('UPDATE collection SET collection_name = ?, publisher = ?, amount = ?, treasury_allocation = ?, published_date = ?, deadline = ?, status = ?, treasury_ID = ?, description = ?', 
+                [this.#collectionName, this.#publisher, this.#amount, this.#treasuryAllocation, this.#publishedDate, this.#deadline, this.#status, treasuryID, this.#description]
+            )
+
+            // Remove collection participants record
+            await conn.promise().query('DELETE FROM collection_participant WHERE collection_ID = ?', [this.#collectionID])
         }
 
 
@@ -74,7 +86,50 @@ class Collection {
                 [this.#collectionID, element.userID, element.amount, element.state, element.lastUpdate, element.autoAssigned]
             )
         }
+
+        // Fetch values from database
+        await this.fetchSpecifRecord()
+
+        return this.extractJSON()
     }
+
+
+    // Get collection record from the database
+    async fetchSpecifRecord() {
+        // Get collection record
+        const [collectionResult] = await conn.promise().query('SELECT collection_ID, collection_name, publisher, user_name, amount, treasury_allocation, CONVERT_TZ(published_date, "+00:00", "+05:30") AS published_date, CONVERT_TZ(deadline, "+00:00", "+05:30") AS deadline, status, description FROM collection JOIN user ON user.user_Id = collection.publisher WHERE collection_ID = ? LIMIT 1',
+            [this.#collectionID]
+        )
+
+        this.#collectionName = collectionResult[0].collection_ID
+        this.#publisherName = collectionResult[0].user_name
+        this.#publisher = collectionResult[0].publisher
+        this.#amount = collectionResult[0].amount
+        this.#treasuryAllocation = collectionResult[0].treasury_allocation
+        this.#publishedDate = sqlToStringDate(collectionResult[0].published_date)
+        this.#deadline = sqlToStringDate(collectionResult[0].deadline)
+        this.#status = collectionResult[0].status
+        this.#description = collectionResult[0].description
+
+        // Fetch participant array
+        this.participantArray = []
+        const [participants] = await conn.promise().query('SELECT user_ID, amount, auto_assigned, paid_state, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update FROM collection_participant WHERE collection_ID = ?', 
+            [this.#collectionID]
+        )
+
+        participants.forEach(element => {
+            this.participantArray.push({
+                userID: element.user_ID,
+                amount: element.amount,
+                autoAssigned: element.auto_assigned,
+                state: element.paid_state,
+                lastUpdate: element.lastUpdate
+            })
+        })
+    }
+
+
+
 
 
     calculateManualAssign() {

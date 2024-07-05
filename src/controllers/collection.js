@@ -17,7 +17,7 @@ const saveCollection = async (req, res) => {
         collection.setPublisher(token.user_ID)
 
         // Save values in the database
-        collection.saveCollectionDatabase() 
+        content = await collection.saveCollectionDatabase() 
 
     } else {
         // Invalid token
