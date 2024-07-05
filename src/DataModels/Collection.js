@@ -84,15 +84,15 @@ class Collection {
 
         // Creating collection participant records
         for(const element of this.participantArray) {
-            await conn.promise().query('INSERT INTO collection_participant (collection_ID, user_ID, amount, paid_state, last_update, auto_assigned) VALUES(?, ?, ?, ?, ?, ?)', 
-                [this.#collectionID, element.userID, element.amount, element.state, element.lastUpdate, element.autoAssigned]
+            await conn.promise().query('INSERT INTO collection_participant (collection_ID, user_ID, amount, paid_amount, last_update, auto_assigned) VALUES(?, ?, ?, ?, ?, ?)', 
+                [this.#collectionID, element.userID, element.amount, element.paidAmount, element.lastUpdate, element.autoAssigned]
             )
         }
 
         // Fetch values from database
-        await this.fetchSpecifRecord()
+        return await this.fetchSpecifRecord()
 
-        return this.extractJSON()
+        
     }
 
 
@@ -115,7 +115,7 @@ class Collection {
 
         // Fetch participant array
         this.participantArray = []
-        const [participants] = await conn.promise().query('SELECT user_ID, amount, auto_assigned, paid_state, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update FROM collection_participant WHERE collection_ID = ?', 
+        const [participants] = await conn.promise().query('SELECT user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update FROM collection_participant WHERE collection_ID = ?', 
             [this.#collectionID]
         )
 
@@ -124,10 +124,32 @@ class Collection {
                 userID: element.user_ID,
                 amount: element.amount,
                 autoAssigned: element.auto_assigned,
-                state: element.paid_state,
+                paidAmount: element.paid_amount,
                 lastUpdate: element.lastUpdate
             })
         })
+
+        return this.extractJSON()
+    }
+
+
+    // List all the collections related to a treasury
+    // Returns a list of collection instants 
+    static async fetchAllCollections(treasuryID) {
+        // Easy method list all the collections ID
+        const [collectionIDs] = await conn.promise().query('SELECT collection_ID from collection WHERE treasury_ID = ?', [treasuryID])
+
+        console.log(collectionIDs)
+
+        // Fetching data for each collection
+        let collectionArray = []
+        for(const element of collectionIDs) {
+            const collection = new Collection({collectionID: element.collection_ID}) // Creating collection instant
+            // Fetch data from the database
+            collectionArray.push(await collection.fetchSpecifRecord()) // Push values to the collection array
+        }
+
+        return collectionArray
     }
 
 

@@ -10,13 +10,20 @@ const saveCollection = async (req, res) => {
     
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)
     if(token) {
-        // Token is verified
-        const collection = new Collection(req.body) // Creating collection instant
-        // Set publisher
-        collection.setPublisher(token.user_ID)
+        try {
+            // Token is verified
+            const collection = new Collection(req.body) // Creating collection instant
+            // Set publisher
+            collection.setPublisher(token.user_ID)
 
-        // Save values in the database
-        content = await collection.saveCollectionDatabase() 
+            // Save values in the database
+            content = await collection.saveCollectionDatabase(token.treasury_ID) 
+        } catch(e) {
+            // Server error
+            process = false
+            errorMessage = e.name
+        }
+        
 
     } else {
         // Invalid token
@@ -33,7 +40,37 @@ const saveCollection = async (req, res) => {
 }
 
 
+// Fetch & list all the collections records related to a treasury group
+const getAllCollections = async(req, res) => {
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    // Verify use token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        try{
+            content = await Collection.fetchAllCollections(token.treasury_ID)
+        } catch(e) {
+            process = false
+            errorMessage = e.name
+        }
+        
+    } else {
+        // Invalid token 
+        proceed = false,
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+}
+
+
 
 module.exports = {
-    saveCollection
+    saveCollection,
+    getAllCollections
 }
