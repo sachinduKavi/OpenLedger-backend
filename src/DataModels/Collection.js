@@ -115,10 +115,9 @@ class Collection {
 
         // Fetch participant array
         this.participantArray = []
-        const [participants] = await conn.promise().query('SELECT collection_participant.user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update, user_name, display_picture FROM collection_participant JOIN user on collection.user_ID = user.user_ID WHERE collection_ID = ?', 
+        const [participants] = await conn.promise().query('SELECT collection_participant.user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update, user_name, display_picture FROM collection_participant JOIN user on collection_participant.user_ID = user.user_ID WHERE collection_ID = ?', 
             [this.#collectionID]
         )
-
         participants.forEach(element => {
             this.participantArray.push({
                 userID: element.user_ID,
@@ -140,8 +139,6 @@ class Collection {
     static async fetchAllCollections(treasuryID) {
         // Easy method list all the collections ID
         const [collectionIDs] = await conn.promise().query('SELECT collection_ID from collection WHERE treasury_ID = ? ORDER BY collection_ID DESC', [treasuryID])
-
-        console.log(collectionIDs)
 
         // Fetching data for each collection
         let collectionArray = []
@@ -176,7 +173,6 @@ class Collection {
 
     incrementManualAssign(value) {
         this.#manualAssigned += parseFloat(value)
-        console.log('from class', this.#manualAssigned)
     }
 
     decrementManualAssign(value) {

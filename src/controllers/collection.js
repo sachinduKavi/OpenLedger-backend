@@ -47,12 +47,12 @@ const getAllCollections = async(req, res) => {
     // Verify use token
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)
     if(token) {
-        try{
+        // try{
             content = await Collection.fetchAllCollections(token.treasury_ID)
-        } catch(e) {
-            process = false
-            errorMessage = e.name
-        }
+        // } catch(e) {
+        //     process = false
+        //     errorMessage = e.name
+        // }
         
     } else {
         // Invalid token 
