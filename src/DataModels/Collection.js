@@ -115,7 +115,7 @@ class Collection {
 
         // Fetch participant array
         this.participantArray = []
-        const [participants] = await conn.promise().query('SELECT user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update FROM collection_participant WHERE collection_ID = ?', 
+        const [participants] = await conn.promise().query('SELECT collection_participant.user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update, user_name, display_picture FROM collection_participant JOIN user on collection.user_ID = user.user_ID WHERE collection_ID = ?', 
             [this.#collectionID]
         )
 
@@ -125,7 +125,9 @@ class Collection {
                 amount: element.amount,
                 autoAssigned: element.auto_assigned,
                 paidAmount: element.paid_amount,
-                lastUpdate: element.lastUpdate
+                lastUpdate: element.lastUpdate,
+                dpLink: element.display_picture,
+                userName: element.user_name
             })
         })
 
@@ -137,7 +139,7 @@ class Collection {
     // Returns a list of collection instants 
     static async fetchAllCollections(treasuryID) {
         // Easy method list all the collections ID
-        const [collectionIDs] = await conn.promise().query('SELECT collection_ID from collection WHERE treasury_ID = ?', [treasuryID])
+        const [collectionIDs] = await conn.promise().query('SELECT collection_ID from collection WHERE treasury_ID = ? ORDER BY collection_ID DESC', [treasuryID])
 
         console.log(collectionIDs)
 

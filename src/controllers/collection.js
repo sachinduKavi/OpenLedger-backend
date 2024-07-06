@@ -10,7 +10,7 @@ const saveCollection = async (req, res) => {
     
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)
     if(token) {
-        try {
+        // try {
             // Token is verified
             const collection = new Collection(req.body) // Creating collection instant
             // Set publisher
@@ -18,11 +18,11 @@ const saveCollection = async (req, res) => {
 
             // Save values in the database
             content = await collection.saveCollectionDatabase(token.treasury_ID) 
-        } catch(e) {
-            // Server error
-            process = false
-            errorMessage = e.name
-        }
+        // } catch(e) {
+        //     // Server error
+        //     process = false
+        //     errorMessage = e.name
+        // }
         
 
     } else {
