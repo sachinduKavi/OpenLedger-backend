@@ -115,7 +115,7 @@ class Collection {
 
         // Fetch participant array
         this.participantArray = []
-        const [participants] = await conn.promise().query('SELECT collection_participant.user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update, user_name, display_picture FROM collection_participant JOIN user on collection_participant.user_ID = user.user_ID WHERE collection_ID = ?', 
+        const [participants] = await conn.promise().query('SELECT collection_participant.user_ID, amount, auto_assigned, paid_amount, CONVERT_TZ(last_update, "+00:00", "05:30") AS last_update, user_name, link FROM collection_participant JOIN user on collection_participant.user_ID = user.user_ID LEFT JOIN image_ref ON image_id = display_picture WHERE collection_ID = ?', 
             [this.#collectionID]
         )
         participants.forEach(element => {
@@ -125,7 +125,7 @@ class Collection {
                 autoAssigned: element.auto_assigned,
                 paidAmount: element.paid_amount,
                 lastUpdate: element.lastUpdate,
-                dpLink: element.display_picture,
+                dpLink: element.link,
                 userName: element.user_name
             })
         })
@@ -152,7 +152,13 @@ class Collection {
     }
 
 
-
+    // Delete the cashflow record from the database
+    async deleteCollection() {
+        // Remove all the records from the collection participant
+        await conn.promise().query('DELETE FROM collection_participant WHERE collection_ID = ?', [this.#collectionID])
+        // Delete record from the collection
+        await conn.promise().query('DELETE FROM collection WHERE collection_ID = ?', [this.#collectionID])
+    }
 
 
     calculateManualAssign() {

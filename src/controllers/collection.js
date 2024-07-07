@@ -71,8 +71,31 @@ const getAllCollections = async(req, res) => {
 }
 
 
+// Discard a collection
+const discardCollection = async (req, res) => {
+    let proceed = true, errorMessage = null // Process variables
+
+    // Verify user token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const collection = new Collection({collectionID: req.body.collectionID}) // Collection instant
+        collection.deleteCollection() // Delete the collection record
+    } else {
+        // Invalid token 
+        proceed = false
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage
+    }))
+}
+
+
 
 module.exports = {
     saveCollection,
-    getAllCollections
+    getAllCollections,
+    discardCollection
 }

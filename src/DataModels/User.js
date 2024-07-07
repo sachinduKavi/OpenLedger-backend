@@ -52,6 +52,27 @@ class User {
         return User.position
     }
 
+
+    // Loading user details from database for particular userID
+    async fetchUserDetails() {
+        const [userDetailsResults] = await conn.promise().query('SELECT user_Id, user_name, user_email, about_me, mobile_number, signature, link, x_axis, y_axis, scale FROM user LEFT JOIN image_ref ON display_picture = image_id WHERE user_Id = ? LIMIT 1',
+            [this.#userID]
+        )
+        // Update instant values 
+        this.#userName = userDetailsResults[0].user_name
+        this.#userEmail = userDetailsResults[0].user_email
+        this.#aboutMe = userDetailsResults[0].about_me
+        this.#mobileNumber = userDetailsResults[0].mobile_number
+        this.#userSignature = userDetailsResults[0].signature
+        this.#dpLink = userDetailsResults[0].link
+        this.#pictureScale = {
+            xAxis: userDetailsResults[0].x_axis,
+            yAxis: userDetailsResults[0].y_axis,
+            scale: userDetailsResults[0].scale
+        }
+
+    } 
+
     // Update Database with current data
     async updateDatabase() {
         const [userResult] = await conn.promise().query('INSERT INTO user (user_ID, user_name, user_email, password_hash, display_picture) VALUES (?, ?, ?, ?, ?)',

@@ -10,7 +10,8 @@ const { sendAuthMail } = require('../SystemEmail')
 
 const {UserModel, TempCodeModel} = require('../Model')
 const { checkUserTreasury } = require('../dbQuery/treasuryQuery')
-const {signToken} = require('../middleware/JWT')
+const {signToken, verifyToken} = require('../middleware/JWT')
+const { parseCookies } = require('../middleware/Cookies')
 
 
 // Validate the code send by the client/user 
@@ -249,10 +250,39 @@ const testingFunction = async (req, res) => {
 }
 
 
+// Loading the user details as a instant of user class 
+const loadUserDetail = async (req, res) => {
+    console.log('load user details')
+    let proceed = true, errorMessage = null, content = null // Process variables
+
+    const [token, errorToken] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Verified token 
+        const user = new User({userID: req.body.userID})
+        await user.fetchUserDetails() // Loading data from the database
+
+        content =user.extractJSON()
+    } else {
+        // Invalid token
+        process = false
+        errorMessage = errorToken
+    }
+
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
+
 module.exports = {
     emailValidation,
     newUserRegistration,
     verificationCode,
     checkLogin,
-    testingFunction
+    testingFunction,
+    loadUserDetail
 }

@@ -163,6 +163,7 @@ class CashflowReportModel {
     }
 
 
+
     static async loadAllCashflowReports(treasuryID) {
         const [cashflowList] = await conn.promise().query('SELECT cashflow_reportID, user_name, document_type, CONVERT_TZ(published_date, "+00:00", "+05:30") AS published_date, CONVERT_TZ(range_s, "+00:00", "+05:30") AS range_s, CONVERT_TZ(range_e, "+00:00", "+05:30") AS range_e, status FROM cashflow_report JOIN user ON user.user_ID = cashflow_report.publisher_ID WHERE cashflow_report.treasury_ID = ? ORDER BY cashflow_reportID DESC', [treasuryID])
         // Converting db results to cashflow instant
