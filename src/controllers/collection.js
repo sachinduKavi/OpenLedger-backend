@@ -6,6 +6,7 @@ const Collection = require('../DataModels/Collection')
 
 // Create new collection or update values of existing collections
 const saveCollection = async (req, res) => {
+    console.log('save collection')
     let proceed = true, errorMessage = null, content = null // Process variables
     
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)
@@ -42,6 +43,7 @@ const saveCollection = async (req, res) => {
 
 // Fetch & list all the collections records related to a treasury group
 const getAllCollections = async(req, res) => {
+    console.log('get all collection')
     let proceed = true, content = null, errorMessage = null // Process variables
 
     // Verify use token
