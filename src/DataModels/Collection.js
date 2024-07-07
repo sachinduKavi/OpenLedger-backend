@@ -1,6 +1,7 @@
 const conn = require('../SQL_Connection')
 const { sqlToStringDate } = require('../middleware/format')
 const {getCollectionID} = require('../middleware/generateID')
+const LedgerRecord = require('./LedgerRecord')
 
 
 
@@ -70,7 +71,11 @@ class Collection {
             await conn.promise().query('INSERT INTO collection (collection_ID, collection_name, publisher, amount, treasury_allocation, published_date, deadline, status, treasury_ID, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                 [this.#collectionID, this.#collectionName, this.#publisher, this.#amount, this.#treasuryAllocation, this.#publishedDate, this.#deadline, this.#status, treasuryID, this.#description]
             )
-            
+
+            // Insert new ledger record 
+            // Creating ledger instant
+            const ledger = new LedgerRecord({title: "Collection: " + this.#collectionName, description: this.#description, amount: this.#treasuryAllocation/-1, treasuryID: treasuryID, createdDate: `${this.#publishedDate}#00:00`, category: "Collection Published"})
+            await ledger.createNewRecord() // New collection record
         } else {
             // Update existing record
             await conn.promise().query('UPDATE collection SET collection_name = ?, publisher = ?, amount = ?, treasury_allocation = ?, published_date = ?, deadline = ?, status = ?, treasury_ID = ?, description = ? WHERE collection_ID = ?', 
