@@ -139,6 +139,24 @@ class Collection {
     }
 
 
+    // Load collection from the database
+    async fetchCollectionRecord() {
+        // Check whether collection is null
+        if(this.#collectionID === 'AUTO') {
+            // Fetch last ID from the database
+            const [collectionID] = await conn.promise().query('SELECT collection_ID FROM collection ORDER BY collection_ID DESC')
+            if(collectionID.length > 0) {
+                this.#collectionID = collectionID[0].collection_ID
+            } else {
+                // No collection exists
+                return false
+            }
+        }
+
+        return this.fetchSpecifRecord()
+    } 
+
+
     // List all the collections related to a treasury
     // Returns a list of collection instants 
     static async fetchAllCollections(treasuryID) {

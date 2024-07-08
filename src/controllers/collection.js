@@ -93,9 +93,40 @@ const discardCollection = async (req, res) => {
 }
 
 
+const fetchSingleRecord = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null // Process variables
+
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const collection = new Collection({collectionID: req.body.collectionID}) // Create collection instant
+        data = await collection.fetchCollectionRecord()
+        if(data) 
+            content = data
+        else {
+            proceed = false
+            errorMessage = 'noCollectionExists'
+        } 
+
+    } else {
+        // Token Error
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
+
 
 module.exports = {
     saveCollection,
     getAllCollections,
-    discardCollection
+    discardCollection,
+    fetchSingleRecord
 }
