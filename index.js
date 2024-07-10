@@ -10,7 +10,7 @@ const cashflowRouter = require('./src/routes/cashflow')
 const collectionRouter = require('./src/routes/collection')
 const transactionRouter = require('./src/routes/transaction')
 
-const PORT = 3500
+const PORT = process.env.PORT || 3500
 
 
 // Test connection with the mysql database 
