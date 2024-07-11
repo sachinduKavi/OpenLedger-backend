@@ -27,9 +27,29 @@ const generateHash = async (req, res) => {
 
 
 const paymentNotification = async (req, res) => {
-    console.log('payment notification', req, {
-        name: "sachindu"
-    })
+
+    const {
+        merchant_id,
+        order_id,
+        payment_id,
+        payhere_amount,
+        payhere_currency,
+        status_code,
+        md5sig,
+        custom_1,
+        custom_2
+      } = req.body
+
+
+    console.log('payment notification', merchant_id,
+        order_id,
+        payment_id,
+        payhere_amount,
+        payhere_currency,
+        status_code,
+        md5sig,
+        custom_1,
+        custom_2)
 
     res.end(JSON.stringify({}))
 }
