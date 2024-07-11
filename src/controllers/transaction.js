@@ -27,7 +27,7 @@ const generateHash = async (req, res) => {
 
 
 const paymentNotification = async (req, res) => {
-    console.log('payment notification', req)
+    console.log('payment notification', req.body)
 
     res.end()
 }
