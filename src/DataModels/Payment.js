@@ -6,10 +6,13 @@ class Payment {
     #amount
     #date
     #reference
+    #evidence
+    #onlinePayment
+    #fromCollection
     #note
 
 
-    constructor({paymentID = null, treasuryID = null, userID = null, status = null, amount = null, date = null, reference = null, note = null}) {
+    constructor({paymentID = 'AUTO', treasuryID = null, userID = null, status = null, amount = 0, date = null, reference = "", note = null, evidence = null, onlinePayment = true, fromCollection = false}) {
         this.#paymentID = paymentID
         this.#treasuryID = treasuryID
         this.#userID = userID
@@ -18,6 +21,9 @@ class Payment {
         this.#date = date
         this.#reference = reference
         this.#note = note
+        this.#fromCollection = fromCollection
+        this.#onlinePayment = onlinePayment
+        this.#evidence = evidence
         
     }
 
@@ -30,14 +36,40 @@ class Payment {
             status: this.#status,
             amount: this.#amount,
             date: this.#date,
+            onlinePayment: this.#onlinePayment,
             reference: this.#reference,
-            note: this.#note
+            note: this.#note,
+            evidence: this.#evidence,
+            fromCollection: this.#fromCollection
         }
     }
 
 
+    calAmountWithTax() {
+        return this.#amount*1.03
+    }
 
-    // Getters
+    
+    // Getters & Setters
+    getFromCollection() {
+        return this.#fromCollection
+    }
+
+    setFromCollection(fromCollection) {
+        this.#fromCollection = fromCollection
+    }
+
+
+
+    getOnlinePayment() {
+        return this.#onlinePayment
+    }
+
+    setOnlinePayment(onlinePayment) {
+        this.#onlinePayment = onlinePayment
+    }
+
+
     getPaymentID() {
         return this.#paymentID
     }
