@@ -1,4 +1,5 @@
 const http = require('http')
+const url = require('url')
 
 const corsOptions = {
     origin: 'http://localhost:3000',  // Replace with your React app origin
@@ -37,18 +38,29 @@ class Fleet {
                 //Outer loop that iterate with use case objects
                 for(let router of useCase.router.routeBundle) {
                     // Inside loop that iterate with route objects
-                    if(req.url === `${useCase.usePath}${router.route}` && req.method === router.method) {
+                    const urlArray = url.parse(req.url, true).pathname.split('/').filter(Boolean)
+                    // console.log(`${urlArray[0]}/${urlArray[1]}`, `${useCase.usePath}${router.route}`) 
+                    if(`/${urlArray[0]}/${urlArray[1]}` === `${useCase.usePath}${router.route}` && req.method === router.method) {
                         let dataBody = "" // Concatenate the req.body string
                         req.on('data', (chunk) => {
                             dataBody += chunk
                         })
+
+                        let params = ""
+                        if(urlArray.length > 2) {
+                            // Params are available
+                            for(let i = 2; i < urlArray.length; i++) {
+                                params += urlArray[i] + "/"
+                            }
+                        }
 
                         req.on('end', () => {
                             if(dataBody.length === 0) {dataBody = "{}"}
                             // Creating request body
                             const request = {
                                 body: JSON.parse(dataBody),
-                                headers: req.headers
+                                headers: req.headers,
+                                params: params
                             }
                             
                             if(!('setHeader' in request.body)) res.writeHead(200)

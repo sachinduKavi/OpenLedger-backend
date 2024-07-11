@@ -244,9 +244,9 @@ const checkLogin = async (req, res) => {
 // Testing function Remove this code before going for the production
 const testingFunction = async (req, res) => {
     // Testing function to test the request send 
-    console.log('Inside the testing class')
-    const member = new Member()
-    
+    console.log('Inside the testing class', req)
+   
+    res.end() 
 }
 
 
