@@ -161,12 +161,12 @@ class Collection {
     // Returns a list of collection instants 
     static async fetchAllCollections(treasuryID) {
         // Easy method list all the collections ID
-        const [collectionIDs] = await conn.promise().query('SELECT collection_ID from collection WHERE treasury_ID = ? ORDER BY collection_ID DESC', [treasuryID])
+        const [collectionIDs] = await conn.promise().query('SELECT collection_ID, collection_name from collection WHERE treasury_ID = ? ORDER BY collection_ID DESC', [treasuryID])
 
         // Fetching data for each collection
         let collectionArray = []
         for(const element of collectionIDs) {
-            const collection = new Collection({collectionID: element.collection_ID}) // Creating collection instant
+            const collection = new Collection({collectionID: element.collection_ID, collectionName: element.collection_name}) // Creating collection instant
             // Fetch data from the database
             collectionArray.push(await collection.fetchSpecifRecord()) // Push values to the collection array
         }

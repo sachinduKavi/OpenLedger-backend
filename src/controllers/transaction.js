@@ -26,6 +26,13 @@ const generateHash = async (req, res) => {
 }
 
 
+const paymentSuccess = async (req, res) => {
+    
+}
+
+
+
+// Payment notification function to Payhere API
 const paymentNotification = async (req, res) => {
 
     const {

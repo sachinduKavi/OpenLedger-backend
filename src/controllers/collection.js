@@ -93,6 +93,7 @@ const discardCollection = async (req, res) => {
 }
 
 
+// Fetch single collection record
 const fetchSingleRecord = async (req, res) => {
     let proceed = true, errorMessage = null, content = null // Process variables
 
@@ -123,10 +124,27 @@ const fetchSingleRecord = async (req, res) => {
 }
 
 
+const loadAllCollectionLite = async (req, res) => {
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+
+    // Building new collection instant
+    const collectionArray = state
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+}
+
+
 
 module.exports = {
     saveCollection,
     getAllCollections,
     discardCollection,
-    fetchSingleRecord
+    fetchSingleRecord,
+    loadAllCollectionLite
 }
