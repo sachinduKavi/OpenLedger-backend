@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const conn = require('../SQL_Connection')
 const saltRounds = 6
 
