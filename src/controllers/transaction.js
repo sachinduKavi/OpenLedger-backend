@@ -39,7 +39,8 @@ const paymentNotification = async (req, res) => {
         custom_1,
         custom_2
       } = req.body
-
+    
+    console.log('Inside the payment notification')
 
     console.log('payment notification', merchant_id,
         order_id,
