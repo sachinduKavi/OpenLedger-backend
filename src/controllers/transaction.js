@@ -1,5 +1,7 @@
 const crypto = require('crypto')
-
+const Payment = require('../DataModels/Payment')
+const {verifyToken} = require('../middleware/JWT')
+const {parseCookies} = require('../middleware/Cookies')
 
 // Generate hash code for payment process 
 const generateHash = async (req, res) => {
@@ -26,8 +28,32 @@ const generateHash = async (req, res) => {
 }
 
 
+
+// Payment counter as success
 const paymentSuccess = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null // Process variables
     
+    // Verify user token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // New payment instant 
+        const payment = new Payment(req.body)
+        payment.setUserID(token.user_ID)
+        payment.setTreasuryID(token.treasury_ID)
+
+        await payment.newPaymentRecord()
+    } else {
+        // Invalid token
+        proceed = false 
+        errorMessage = tokenError
+    }
+    
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
 }
 
 
@@ -65,5 +91,6 @@ const paymentNotification = async (req, res) => {
 
 module.exports = {
     generateHash,
-    paymentNotification
+    paymentNotification,
+    paymentSuccess
 }

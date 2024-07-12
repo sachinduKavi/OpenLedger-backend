@@ -101,6 +101,14 @@ class Collection {
     }
 
 
+    // Update single participant paid amount 
+    async updatePaidAmount(userID, increment) {
+        await conn.promise().query('UPDATE collection_participant SET paid_amount = paid_amount + ? WHERE collection_ID = ? AND user_ID = ?',
+            [increment, this.#collectionID, userID]
+        )
+    }
+
+
     // Get collection record from the database
     async fetchSpecifRecord() {
         // Get collection record

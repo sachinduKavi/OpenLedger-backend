@@ -117,6 +117,18 @@ const getCollectionID = async  () => {
         : generateID(collectionID[0]['collection_ID'])
 }
 
+
+// Generate payment ID
+const getPaymentID = async  () => {
+    const [paymentID] = await conn.promise().query('SELECT payment_ID FROM payment ORDER BY payment_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (paymentID.length == 0)
+        ? generateID('PY00')
+        : generateID(paymentID[0]['payment_ID'])
+}
+
+
 module.exports = {
     getLastTreasuryID,
     getLastPictureID,
@@ -127,5 +139,6 @@ module.exports = {
     getLastCategoryID,
     getStatusID,
     getCashflowReportID,
-    getCollectionID
+    getCollectionID,
+    getPaymentID
 }

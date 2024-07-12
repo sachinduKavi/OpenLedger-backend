@@ -1,3 +1,7 @@
+const { getPaymentID } = require('../middleware/generateID')
+const conn = require('../SQL_Connection')
+const LedgerRecord = require('../DataModels/LedgerRecord')
+const Collection = require('../DataModels/Collection')
 class Payment {
     #paymentID
     #treasuryID
@@ -41,6 +45,43 @@ class Payment {
             note: this.#note,
             evidence: this.#evidence,
             fromCollection: this.#fromCollection
+        }
+    }
+
+
+    // You need to set userID and treasuryID manually 
+    // Create new payment record in the database
+    async newPaymentRecord() {
+        // Generating new payment ID if not exists
+        if(this.#paymentID === "AUTO") this.#paymentID = await getPaymentID()
+        
+            // Insert record to sql database
+        await conn.promise().query('INSERT INTO payment(payment_ID, treasury_ID, user_ID, online_payment, status, amount, date, reference, note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+            [this.#paymentID, this.#treasuryID , this.#userID, this.#onlinePayment, this.#status, this.#amount, this.#date, this.#reference, this.#note]
+        )
+
+        // If the payment is a verified 
+        //  * ledger record is added
+        //  * Paid amount in the collection is updated if it only related for collection 
+        if(this.#status === "VERIFIED") {
+            if(this.#fromCollection) {
+                // Payment is for collection 
+                const collection = new Collection({collectionID: this.#reference})
+                await collection.updatePaidAmount(this.#userID, this.#amount) // Update treasury participant
+            }
+
+            // Creating ledger instant
+            const ledger = new LedgerRecord({
+                title: "Collection payment",
+                description: `User ${this.#userID} has paid LKR ${this.#amount} for the collection ${this.#reference}`,
+                amount: this.#amount,
+                treasuryID: this.#treasuryID,
+                createdDate: this.#date + "#" + "00:00",
+                category: "Collection"
+            })
+
+            await ledger.createNewRecord() // Creating new ledger record
+
         }
     }
 
