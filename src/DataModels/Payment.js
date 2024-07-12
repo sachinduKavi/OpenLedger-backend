@@ -67,17 +67,18 @@ class Payment {
             if(this.#fromCollection) {
                 // Payment is for collection 
                 const collection = new Collection({collectionID: this.#reference})
-                await collection.updatePaidAmount(this.#userID, this.#amount) // Update treasury participant
+                await collection.updatePaidAmount(this.#userID, this.#amount, this.#date) // Update treasury participant
             }
 
             // Creating ledger instant
             const ledger = new LedgerRecord({
-                title: "Collection payment",
-                description: `User ${this.#userID} has paid LKR ${this.#amount} for the collection ${this.#reference}`,
+                title: this.#fromCollection? "Collection: " + this.#reference : this.#reference,
+                description: this.#fromCollection? `User ${this.#userID} has paid LKR ${this.#amount} for the collection ${this.#reference}`
+                : this.#note,
                 amount: this.#amount,
                 treasuryID: this.#treasuryID,
                 createdDate: this.#date + "#" + "00:00",
-                category: "Collection"
+                category: this.#fromCollection? "Collection" : "Payment"
             })
 
             await ledger.createNewRecord() // Creating new ledger record
