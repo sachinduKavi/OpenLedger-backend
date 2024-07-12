@@ -89,8 +89,38 @@ const paymentNotification = async (req, res) => {
 }
 
 
+// Load all the payments related to treasury group
+const loadAllTreasuryTransactions = async (req, res) => {
+    console.log('Loading payments')
+    let proceed = true, content = null, errorMessage = null
+
+    // Verify user token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const payment = new Payment({treasuryID: token.treasury_ID})
+        const collectionArray = await payment.fetchAllPayments()
+        content = collectionArray.map(element => {
+            return (element.extractJSON())
+        })
+    } else {
+        // Token is invalid
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+}
+
+
 module.exports = {
     generateHash,
     paymentNotification,
-    paymentSuccess
+    paymentSuccess,
+    loadAllTreasuryTransactions
 }

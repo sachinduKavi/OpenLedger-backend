@@ -2,6 +2,7 @@ const { getPaymentID } = require('../middleware/generateID')
 const conn = require('../SQL_Connection')
 const LedgerRecord = require('../DataModels/LedgerRecord')
 const Collection = require('../DataModels/Collection')
+const { sqlToStringDate } = require('../middleware/format')
 class Payment {
     #paymentID
     #treasuryID
@@ -14,9 +15,10 @@ class Payment {
     #onlinePayment
     #fromCollection
     #note
+    #userName
 
 
-    constructor({paymentID = 'AUTO', treasuryID = null, userID = null, status = null, amount = 0, date = null, reference = "", note = null, evidence = null, onlinePayment = true, fromCollection = false}) {
+    constructor({paymentID = 'AUTO', treasuryID = null, userID = null, status = null, amount = 0, date = null, reference = "", note = null, evidence = null, onlinePayment = true, fromCollection = false, userName = null}) {
         this.#paymentID = paymentID
         this.#treasuryID = treasuryID
         this.#userID = userID
@@ -28,7 +30,7 @@ class Payment {
         this.#fromCollection = fromCollection
         this.#onlinePayment = onlinePayment
         this.#evidence = evidence
-        
+        this.#userName = userName
     }
 
 
@@ -44,7 +46,8 @@ class Payment {
             reference: this.#reference,
             note: this.#note,
             evidence: this.#evidence,
-            fromCollection: this.#fromCollection
+            fromCollection: this.#fromCollection,
+            userName: this.#userName
         }
     }
 
@@ -87,12 +90,47 @@ class Payment {
     }
 
 
+    // Load all the payments records
+    async fetchAllPayments() {
+        const [paymentResults] = await conn.promise().query('SELECT payment_ID, user_name, online_payment, status, amount, CONVERT_TZ(date, "+00:00", "+05:30") AS date, reference, note FROM payment JOIN user ON user.user_ID = payment.user_ID WHERE treasury_ID = ? ORDER BY payment_ID DESC',
+            [this.#treasuryID]
+        )
+
+        let paymentArray = []
+        // Converting them to payment instant
+        paymentResults.forEach(element => {
+            paymentArray.push(new Payment({
+                treasuryID: this.#treasuryID,
+                paymentID: element.payment_ID,
+                userName: element.user_name,
+                onlinePayment: element.online_payment,
+                status: element.status,
+                amount: element.amount,
+                date: sqlToStringDate(element.date),
+                reference: element.reference,
+                note: element.note
+            }))
+            
+        })
+
+        return paymentArray
+    }
+
+
     calAmountWithTax() {
         return this.#amount*1.03
     }
 
     
     // Getters & Setters
+    getUserName() {
+        return this.#userName
+    }
+
+    setUserName(userName) {
+        this.#userName = userName
+    }
+
     getFromCollection() {
         return this.#fromCollection
     }
