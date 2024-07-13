@@ -57,10 +57,10 @@ class Payment {
     async newPaymentRecord() {
         // Generating new payment ID if not exists
         if(this.#paymentID === "AUTO") this.#paymentID = await getPaymentID()
-        
+        console.log(this.#evidence , 'Evidence print ')
             // Insert record to sql database
-        await conn.promise().query('INSERT INTO payment(payment_ID, treasury_ID, user_ID, online_payment, status, amount, date, reference, note) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-            [this.#paymentID, this.#treasuryID , this.#userID, this.#onlinePayment, this.#status, this.#amount, this.#date, this.#reference, this.#note]
+        await conn.promise().query('INSERT INTO payment(payment_ID, treasury_ID, user_ID, online_payment, status, amount, date, reference, note, evidence) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+            [this.#paymentID, this.#treasuryID , this.#userID, this.#onlinePayment, this.#status, this.#amount, this.#date, this.#reference, this.#note, this.#evidence]
         )
 
         // If the payment is a verified 
@@ -92,7 +92,7 @@ class Payment {
 
     // Load all the payments records
     async fetchAllPayments() {
-        const [paymentResults] = await conn.promise().query('SELECT payment_ID, user_name, online_payment, status, amount, CONVERT_TZ(date, "+00:00", "+05:30") AS date, reference, note FROM payment JOIN user ON user.user_ID = payment.user_ID WHERE treasury_ID = ? ORDER BY payment_ID DESC',
+        const [paymentResults] = await conn.promise().query('SELECT payment_ID, user_name, online_payment, status, amount, CONVERT_TZ(date, "+00:00", "+05:30") AS date, reference, note, evidence FROM payment JOIN user ON user.user_ID = payment.user_ID WHERE treasury_ID = ? ORDER BY payment_ID DESC',
             [this.#treasuryID]
         )
 
@@ -108,7 +108,8 @@ class Payment {
                 amount: element.amount,
                 date: sqlToStringDate(element.date),
                 reference: element.reference,
-                note: element.note
+                note: element.note,
+                evidence: element.evidence
             }))
             
         })
