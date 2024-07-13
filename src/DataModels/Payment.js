@@ -63,9 +63,15 @@ class Payment {
             [this.#paymentID, this.#treasuryID , this.#userID, this.#onlinePayment, this.#status, this.#amount, this.#date, this.#reference, this.#note, this.#evidence]
         )
 
-        // If the payment is a verified 
-        //  * ledger record is added
-        //  * Paid amount in the collection is updated if it only related for collection 
+        await this.finalizePayment()
+        
+    }
+
+
+    // If the payment is a verified 
+    //  * ledger record is added
+    //  * Paid amount in the collection is updated if it only related for collection 
+    async finalizePayment() {
         if(this.#status === "VERIFIED") {
             if(this.#fromCollection) {
                 // Payment is for collection 
@@ -87,6 +93,16 @@ class Payment {
             await ledger.createNewRecord() // Creating new ledger record
 
         }
+    }
+
+
+    // Update payment state 
+    async updatePaymentApproved(updateRecord) {
+        await conn.promise().query('UPDATE payment SET status = ? WHERE payment_ID = ?',
+            [this.#status, this.#paymentID]
+        )
+        if(updateRecord)
+            this.finalizePayment()
     }
 
 
@@ -116,6 +132,7 @@ class Payment {
 
         return paymentArray
     }
+    
 
 
     calAmountWithTax() {
