@@ -3,6 +3,8 @@ const Payment = require('../DataModels/Payment')
 const {verifyToken} = require('../middleware/JWT')
 const {parseCookies} = require('../middleware/Cookies')
 
+
+
 // Generate hash code for payment process 
 const generateHash = async (req, res) => {
     let proceed = true, errorMessage = null, content = null
@@ -26,7 +28,6 @@ const generateHash = async (req, res) => {
         errorMessage: errorMessage
     }))
 }
-
 
 
 // Payment counter as success
@@ -147,10 +148,45 @@ const stateModify = async (req, res) => {
 }
 
 
+
+// Payment status is decremented 
+const decrementStatus = async (req, res) => {
+    console.log('decrement')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Creating payment instant
+        const payment = new Payment(req.body.payment)
+        await payment.decrementPayment()
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+
+
+}
+
+
+
+
+
+
+
 module.exports = {
     generateHash,
     paymentNotification,
     paymentSuccess,
     loadAllTreasuryTransactions,
-    stateModify
+    stateModify,
+    decrementStatus
 }

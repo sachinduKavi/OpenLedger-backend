@@ -81,7 +81,7 @@ class Payment {
 
             // Creating ledger instant
             const ledger = new LedgerRecord({
-                title: this.#fromCollection? "Collection: " + this.#reference : this.#reference,
+                title:  "Payment " + this.#reference + " is " + this.#status,
                 description: this.#fromCollection? `User ${this.#userID} has paid LKR ${this.#amount} for the collection ${this.#reference}`
                 : this.#note,
                 amount: this.#amount,
@@ -103,6 +103,32 @@ class Payment {
         )
         if(updateRecord)
             this.finalizePayment()
+    }
+
+    // Payment is decremented
+    async decrementPayment() {
+        await conn.promise().query('UPDATE payment SET status = ? WHERE payment_ID = ?',
+            [this.#status, this.#paymentID]
+        )
+
+        if(this.#fromCollection) {
+            // Payment is for collection 
+            const collection = new Collection({collectionID: this.#reference})
+            await collection.updatePaidAmount(this.#userID, this.#amount/-1, this.#date) // Update treasury participant
+        }
+
+        // Creating ledger instant
+        const ledger = new LedgerRecord({
+            title: "Payment is " + this.#status,
+            description: `Payment ${this.#paymentID} has been disapproved, and the amount has been refunded`,
+            amount: this.#amount/-1,
+            treasuryID: this.#treasuryID,
+            createdDate: this.#date + "#" + "00:00",
+            category: this.#fromCollection? "Collection" : "Payment"
+        })
+
+        await ledger.createNewRecord() // Creating new ledger record
+
     }
 
 
