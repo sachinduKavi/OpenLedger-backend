@@ -2,12 +2,12 @@ const mysql = require('mysql2')
 
 
 // Initializing the sql Connection for the database 
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'open_ledger'
-})
+// const conn = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'root',
+//     database: 'open_ledger'
+// })
 
 // freeDB
 // const conn = mysql.createConnection({
@@ -49,5 +49,20 @@ const conn = mysql.createConnection({
 //     password: 'RRyxYhiVkt',
 //     database: 'sql8717865'
 // })
+
+
+// Pethum SQL db password = Ledger@pass
+// Host: sql8.freesqldatabase.com
+// Database name: sql8719852
+// Database user: sql8719852
+// Database password: E4z8VKeiwy
+// Port number: 3306
+
+const conn = mysql.createConnection({
+    host: 'sql8.freesqldatabase.com',
+    user: 'sql8719852',
+    password: 'E4z8VKeiwy',
+    database: 'sql8719852'
+})
 
 module.exports = conn

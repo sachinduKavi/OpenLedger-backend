@@ -129,6 +129,8 @@ const stateModify = async (req, res) => {
     if(token) {
         // Creating payment instant
         const payment = new Payment(req.body.payment)
+        payment.setUserID(token.user_ID)
+        payment.setTreasuryID(token.treasury_ID)
         await payment.updatePaymentApproved(req.body.updateRecord)
       
     } else {
@@ -159,6 +161,8 @@ const decrementStatus = async (req, res) => {
     if(token) {
         // Creating payment instant
         const payment = new Payment(req.body.payment)
+        payment.setUserID(token.user_ID)
+        payment.setTreasuryID(token.treasury_ID)
         await payment.decrementPayment()
     } else {
         // Invalid token
