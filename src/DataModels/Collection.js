@@ -153,11 +153,13 @@ class Collection {
 
 
     // Load collection from the database
-    async fetchCollectionRecord() {
+    async fetchCollectionRecord(treasuryID) {
         // Check whether collection is null
         if(this.#collectionID === 'AUTO') {
             // Fetch last ID from the database
-            const [collectionID] = await conn.promise().query('SELECT collection_ID FROM collection WHERE status != "DRAFT" ORDER BY collection_ID DESC')
+            const [collectionID] = await conn.promise().query('SELECT collection_ID FROM collection WHERE status != "DRAFT" AND treasury_ID = ? ORDER BY collection_ID DESC',
+                [treasuryID]
+            )
             if(collectionID.length > 0) {
                 this.#collectionID = collectionID[0].collection_ID
             } else {

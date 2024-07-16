@@ -101,7 +101,7 @@ const fetchSingleRecord = async (req, res) => {
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)
     if(token) {
         const collection = new Collection({collectionID: req.body.collectionID}) // Create collection instant
-        data = await collection.fetchCollectionRecord()
+        data = await collection.fetchCollectionRecord(token.treasury_ID)
         if(data) 
             content = data
         else {
