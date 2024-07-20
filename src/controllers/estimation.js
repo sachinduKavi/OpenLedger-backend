@@ -30,7 +30,7 @@ const allEstimations = async (req, res) => {
     res.end(JSON.stringify({
         process: process,
         errorMessage: errorMessage,
-        content: content.map(element => {
+        content: content?.map(element => {
             return element.extractJSON()
         })
     }))
