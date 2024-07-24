@@ -2,12 +2,12 @@ const mysql = require('mysql2')
 
 
 // Initializing the sql Connection for the database 
-// const conn = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: 'root',
-//     database: 'open_ledger'
-// })
+const conn = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'open_ledger'
+})
 
 // freeDB
 // const conn = mysql.createConnection({
@@ -66,11 +66,11 @@ const mysql = require('mysql2')
 // })
 
 
-const conn = mysql.createConnection({
-    host: 'sql3.freesqldatabase.com',
-    user: 'sql3721986',
-    password: 'jXwnNaF26L',
-    database: 'sql3721986'
-})
+// const conn = mysql.createConnection({
+//     host: 'sql3.freesqldatabase.com',
+//     user: 'sql3721986',
+//     password: 'jXwnNaF26L',
+//     database: 'sql3721986'
+// })
 
 module.exports = conn
