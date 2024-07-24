@@ -58,11 +58,19 @@ const mysql = require('mysql2')
 // Database password: E4z8VKeiwy
 // Port number: 3306
 
+// const conn = mysql.createConnection({
+//     host: 'sql8.freesqldatabase.com',
+//     user: 'sql8719852',
+//     password: 'E4z8VKeiwy',
+//     database: 'sql8719852'
+// })
+
+
 const conn = mysql.createConnection({
-    host: 'sql8.freesqldatabase.com',
-    user: 'sql8719852',
-    password: 'E4z8VKeiwy',
-    database: 'sql8719852'
+    host: 'sql3.freesqldatabase.com',
+    user: 'sql3721986',
+    password: 'jXwnNaF26L',
+    database: 'sql3721986'
 })
 
 module.exports = conn
