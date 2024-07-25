@@ -1,5 +1,7 @@
+const { sqlToStringDate } = require("../middleware/format")
 const { getAnnouncementID } = require("../middleware/generateID")
 const conn = require('../SQL_Connection')
+
 
 class Announcement {
   #announcementID
@@ -11,6 +13,7 @@ class Announcement {
   #imageLink
   #commentArray
   #likeCount
+  #publisherDP
 
   constructor({
     announcementID = 'AUTO',
@@ -21,7 +24,8 @@ class Announcement {
     caption = null,
     imageLink = null,
     commentArray = [],
-    likeCount = null
+    likeCount = null,
+    publisherDP = null
   }) {
     this.#announcementID = announcementID
     this.#publishDate = publishDate
@@ -32,6 +36,7 @@ class Announcement {
     this.#imageLink = imageLink
     this.#commentArray = commentArray
     this.#likeCount = likeCount
+    this.#publisherDP = publisherDP
   }
 
 
@@ -49,6 +54,33 @@ class Announcement {
 
     }
   }
+
+
+
+  // Fetching all the announcements related to treasuryID
+  static async fetchAllAnnouncements(treasuryID) {
+    const [annResults] = await conn.promise().query('SELECT announcement_ID, CONVERT_TZ(published_date, "+00:00", "+05:30") AS published_date, user_name, publisher_ID, caption, image_link, link FROM announcement JOIN user ON user.user_ID = announcement.publisher_ID LEFT JOIN image_ref ON user.display_picture = image_ref.image_Id WHERE treasury_ID = ? ORDER BY announcement_ID DESC',
+        [treasuryID]
+    )
+
+    let announcementList = []
+    // Creating announcement instances for each record 
+    annResults.forEach(element => {
+        announcementList.push(new Announcement({
+            announcementID: element.announcement_ID,
+            publishDate: sqlToStringDate(element.published_date),
+            publisherName: element.user_name,
+            publisherID: element.publisher_ID,
+            caption: element.caption,
+            imageLink: element.image_link,
+            publisherDP: element.link
+        }))
+    })
+
+    return announcementList
+  }
+
+
 
   // Getters
   getAnnouncementID() {
@@ -134,6 +166,7 @@ class Announcement {
       imageLink: this.#imageLink,
       commentArray: this.#commentArray,
       likeCount: this.#likeCount,
+      publisherDP: this.#publisherDP
     }
   }
 }
