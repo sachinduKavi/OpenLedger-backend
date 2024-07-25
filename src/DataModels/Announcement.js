@@ -1,3 +1,5 @@
+const { getAnnouncementID } = require("../middleware/generateID")
+const conn = require('../SQL_Connection')
 
 class Announcement {
   #announcementID
@@ -30,6 +32,22 @@ class Announcement {
     this.#imageLink = imageLink
     this.#commentArray = commentArray
     this.#likeCount = likeCount
+  }
+
+
+  // Creating new announcement record
+  async saveAnnouncement() {
+    if(this.#announcementID === 'AUTO') {
+        // New announcement to publish 
+        this.#announcementID = await getAnnouncementID()
+
+        await conn.promise().query('INSERT INTO announcement (announcement_ID, published_date, treasury_ID, publisher_ID, caption, image_Link) VALUES (?, ?, ?, ?, ?, ?)',
+            [this.#announcementID, this.#publishDate, this.#treasuryID, this.#publisherID, this.#caption, this.#imageLink]
+        )
+
+        console.log('data saved ....')
+
+    }
   }
 
   // Getters
