@@ -9,6 +9,7 @@ const estimationRouter = require('./src/routes/estimation')
 const cashflowRouter = require('./src/routes/cashflow')
 const collectionRouter = require('./src/routes/collection')
 const transactionRouter = require('./src/routes/transaction')
+const announcementRouter = require('./src/routes/announcement')
 
 const PORT = process.env.PORT || 3500
 
@@ -32,6 +33,8 @@ fleetApp.use('/cashflow', cashflowRouter)
 fleetApp.use('/collection', collectionRouter)
 
 fleetApp.use('/transaction', transactionRouter)
+
+fleetApp.use('/announcement', announcementRouter)
 
 
 
