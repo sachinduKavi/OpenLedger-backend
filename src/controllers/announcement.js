@@ -57,7 +57,33 @@ const loadAllAnnouncements = async (req, res) => {
 }
 
 
+// Delete announcement record 
+const deleteAnnouncement = async (req, res) => {
+    console.log('Delete announcement')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Creating announcement instant
+        const announcement = new Announcement({announcementID: req.body.announcementID})
+        await announcement.deleteAnnouncement() // Delete the announcement
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = errorMessage
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+}
+
+
 module.exports = {
     createAnnouncement,
-    loadAllAnnouncements
+    loadAllAnnouncements,
+    deleteAnnouncement
 }

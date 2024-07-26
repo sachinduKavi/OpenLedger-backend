@@ -17,7 +17,7 @@ class Announcement {
 
   constructor({
     announcementID = 'AUTO',
-    publishDate = generateCurrentDate(),
+    publishDate = null,
     treasuryID = null,
     publisherID = null,
     publisherName = null,
@@ -50,11 +50,21 @@ class Announcement {
             [this.#announcementID, this.#publishDate, this.#treasuryID, this.#publisherID, this.#caption, this.#imageLink]
         )
 
-        console.log('data saved ....')
-
     }
   }
 
+  // Delete announcement record from the database
+  async deleteAnnouncement() {
+    // Deleting announcement records 
+    await conn.promise().query('DELETE FROM announcement WHERE announcement_ID = ?',
+      [this.#announcementID]
+    )
+
+    // Delete all the comments related to the announcement
+    await conn.promise().query('DELETE FROM comments WHERE record_ID = ?', 
+      [this.#announcementID]
+    )
+  }
 
 
   // Fetching all the announcements related to treasuryID
@@ -166,7 +176,8 @@ class Announcement {
       imageLink: this.#imageLink,
       commentArray: this.#commentArray,
       likeCount: this.#likeCount,
-      publisherDP: this.#publisherDP
+      publisherDP: this.#publisherDP,
+      publisherID: this.#publisherID
     }
   }
 }
