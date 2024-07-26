@@ -207,11 +207,21 @@ class Collection {
     }
 
 
+    calculateAutoAssignCount() {
+        this.autoAssignCount = 0
+        this.participantArray.forEach(element => {
+            if(element.autoAssigned) {
+                this.autoAssignCount++
+            }
+        })
+
+        return this.autoAssignCount
+    }
 
     // Calculate the amount for one participant 
     calOneAmount() {
-        return Collection.autoAssignCount !== 0 
-            ? this.#dividedAmount / Collection.autoAssignCount
+        return this.calculateAutoAssignCount() !== 0 
+            ? this.#dividedAmount / this.calculateAutoAssignCount()
             : 0
     }
 
