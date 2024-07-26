@@ -42,6 +42,13 @@ class CommentsModel {
         }
     }
 
+    // Delete a comment from the database
+    async deleteComment() {
+        await conn.promise().query('DELETE FROM comments WHERE comment_ID = ?', 
+            [this.#commentID]
+        )
+    }
+
 
     // List all the comment for record ID
     static async listALlComments(recordID) {

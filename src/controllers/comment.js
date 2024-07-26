@@ -62,7 +62,33 @@ const fetchAllComment = async (req, res) => {
 }
 
 
+// Delete a comment from the database
+const deleteComment = async (req, res) => {
+    console.log('delete a comment ')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Creating instant of the comment
+        const comment = new CommentModel({commentID: req.body.commentID})
+        await comment.deleteComment() // delete the comment
+    } else {
+        // Invalid token 
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+}
+
+
 module.exports = {
     createComment,
-    fetchAllComment
+    fetchAllComment,
+    deleteComment
 }
