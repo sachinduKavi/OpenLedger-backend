@@ -7,12 +7,14 @@ class CommentsModel {
     #recordID
     #userID
     #content
+    #userName
 
-    constructor({commentID = null, recordID = null, userID = null, content = null}) {
+    constructor({commentID = null, recordID = null, userID = null, content = null, userName = null}) {
         this.#commentID = commentID
         this.#recordID = recordID
         this.#userID = userID
         this.#content = content
+        this.#userName = userName
     }
 
 
@@ -21,7 +23,8 @@ class CommentsModel {
             commentID: this.#commentID,
             recordID: this.#recordID,
             userID: this.#userID,
-            content: this.#content
+            content: this.#content,
+            userName: this.#userName
         }
     }
 
@@ -42,20 +45,34 @@ class CommentsModel {
 
     // List all the comment for record ID
     static async listALlComments(recordID) {
-        const [commentResult] = await conn.promise().query('SELECT * FROM comments WHERE record_ID = ?',
+        const [commentResult] = await conn.promise().query('SELECT comment_ID, record_ID, comments.user_ID, content, user_name FROM comments JOIN user ON comments.user_ID = user.user_ID WHERE record_ID = ?',
             [recordID]
         )
 
         let commentList = []
         // Creating list of comment instances 
         commentResult.forEach(element => {
-            commentList.push(new CommentsModel(element))
+            commentList.push(new CommentsModel({
+                commentID: element.comment_ID,
+                recordID: element.record_ID,
+                userID: element.user_ID,
+                content: element.content,
+                userName: element.user_name
+            }))
         });
 
         return commentList
     }
 
 
+
+    getUserName() {
+        return this.#userName
+    }
+
+    setUserName(userName) {
+        this.#userName = userName
+    }
 
     getCommentID() {
         return this.#commentID;
