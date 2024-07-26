@@ -280,7 +280,7 @@ const loadUserDetail = async (req, res) => {
 
 // Get user details for userID
 const fetchUserDetails = async (req, res) => {
-
+    
 }
 
 

@@ -128,7 +128,7 @@ const getPaymentID = async  () => {
         : generateID(paymentID[0]['payment_ID'])
 }
 
-// Generate payment ID
+// Generate announcement ID
 const getAnnouncementID = async  () => {
     const [announcementID] = await conn.promise().query('SELECT announcement_ID FROM announcement ORDER BY announcement_ID DESC LIMIT 1').catch(err => {
         throw err
@@ -136,6 +136,16 @@ const getAnnouncementID = async  () => {
     return (announcementID.length == 0)
         ? generateID('AN00')
         : generateID(announcementID[0]['announcement_ID'])
+}
+
+// Generate comment ID
+const getCommentID = async  () => {
+    const [commentID] = await conn.promise().query('SELECT comment_ID FROM comments ORDER BY comment_ID DESC LIMIT 1').catch(err => {
+        throw err
+    })
+    return (commentID.length == 0)
+        ? generateID('CM00')
+        : generateID(commentID[0]['comment_ID'])
 }
 
 
@@ -151,5 +161,6 @@ module.exports = {
     getCashflowReportID,
     getCollectionID,
     getPaymentID,
-    getAnnouncementID
+    getAnnouncementID,
+    getCommentID
 }
