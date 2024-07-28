@@ -70,7 +70,7 @@ const deleteAnnouncement = async (req, res) => {
     } else {
         // Invalid token
         proceed = false
-        errorMessage = errorMessage
+        errorMessage = tokenError
     }
 
 
@@ -82,8 +82,35 @@ const deleteAnnouncement = async (req, res) => {
 }
 
 
+// Toggling like of the announcement on user request 
+const toggleLike = async (req, res) => {
+    console.log('Toggle Like')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Creating announcement instant
+        const announcement = new Announcement({announcementID: req.body.announcementID})
+        content = await announcement.togglePostLike(token.user_ID)
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+
+}
+
+
 module.exports = {
     createAnnouncement,
     loadAllAnnouncements,
-    deleteAnnouncement
+    deleteAnnouncement,
+    toggleLike
 }

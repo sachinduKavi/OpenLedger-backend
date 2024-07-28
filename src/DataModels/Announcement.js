@@ -67,6 +67,33 @@ class Announcement {
   }
 
 
+  // Adding like or removing like from the post
+  async togglePostLike(userID) {
+    // Check whether user has already liked
+    const [likeList] = await conn.promise().query('SELECT * FROM post_like WHERE announcement_ID = ? AND user_ID = ?',
+      [this.#announcementID, userID]
+    )
+
+    let userLike = 'error'
+    if(likeList.length > 0) {
+      // User has already like the post 
+      // Remove the like
+      await conn.promise().query('DELETE FROM post_like WHERE announcement_ID = ? AND user_ID = ?',
+        [this.#announcementID, userID]
+      )
+      userLike = "unlike"
+    } else {
+      // Add new like to the post
+      await conn.promise().query('INSERT INTO post_like (announcement_ID, user_ID) VALUES (?, ?)',
+        [this.#announcementID, userID]
+      )
+      userLike = 'like'
+    }
+
+    return userLike
+  }
+
+
   // Fetching all the announcements related to treasuryID
   static async fetchAllAnnouncements(treasuryID) {
     const [annResults] = await conn.promise().query('SELECT announcement_ID, CONVERT_TZ(published_date, "+00:00", "+05:30") AS published_date, user_name, publisher_ID, caption, image_link, link FROM announcement JOIN user ON user.user_ID = announcement.publisher_ID LEFT JOIN image_ref ON user.display_picture = image_ref.image_Id WHERE treasury_ID = ? ORDER BY announcement_ID DESC',
