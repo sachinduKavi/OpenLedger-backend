@@ -108,9 +108,34 @@ const toggleLike = async (req, res) => {
 }
 
 
+// Count number of likes and comments for one post
+const postCountParameters = async (req, res) => {
+    console.log('post parameters')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const announcement = new Announcement({announcementID: req.body.announcementID})
+        content = await announcement.countParameters(token.user_ID)
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+}   
+
+
 module.exports = {
     createAnnouncement,
     loadAllAnnouncements,
     deleteAnnouncement,
-    toggleLike
+    toggleLike,
+    postCountParameters
 }
