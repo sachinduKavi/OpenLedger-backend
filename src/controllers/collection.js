@@ -124,6 +124,48 @@ const fetchSingleRecord = async (req, res) => {
 }
 
 
+// Collection withdraw 
+const collectionWithdraw = async (req, res) => {
+    console.log('collection withdraw')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // Token is verifies
+        const collection = new Collection({collectionID: req.body.collectionID})
+
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+}
+
+
+// Check collection withdraw
+const checkWithdraw = async (req, res) => {
+    console.log('collection withdraw')
+    let proceed = true, content = null, errorMessage = null // Process variables
+
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        // const collection = 
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        content: content,
+        errorMessage: errorMessage
+    }))
+
+}
+
+
 const loadAllCollectionLite = async (req, res) => {
     let proceed = true, content = null, errorMessage = null // Process variables
 
@@ -146,5 +188,5 @@ module.exports = {
     getAllCollections,
     discardCollection,
     fetchSingleRecord,
-    loadAllCollectionLite
+    loadAllCollectionLite,
 }
