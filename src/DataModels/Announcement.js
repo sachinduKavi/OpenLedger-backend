@@ -55,15 +55,21 @@ class Announcement {
 
   // Delete announcement record from the database
   async deleteAnnouncement() {
+    // Delete all the comments related to the announcement
+    await conn.promise().query('DELETE FROM comments WHERE record_ID = ?', 
+      [this.#announcementID]
+    )
+
+    await conn.promise().query('DELETE FROM post_like WHERE announcement_ID = ?',
+      [this.#announcementID]
+    )
+
     // Deleting announcement records 
     await conn.promise().query('DELETE FROM announcement WHERE announcement_ID = ?',
       [this.#announcementID]
     )
 
-    // Delete all the comments related to the announcement
-    await conn.promise().query('DELETE FROM comments WHERE record_ID = ?', 
-      [this.#announcementID]
-    )
+    
   }
 
 

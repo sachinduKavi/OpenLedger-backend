@@ -25,7 +25,7 @@ class EstimateReport {
         this.#estimationID = estimationID 
         this.#overseerages = overseerages
         this.#insuranceDate = insuranceDate
-        this.#status = status,
+        this.#status = status
         this.#publisher = publisher
  
 
