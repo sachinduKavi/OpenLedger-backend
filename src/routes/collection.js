@@ -2,7 +2,7 @@ const Router = require('../../custom_package/Route')
 const router = new Router()
 
 
-const {saveCollection, getAllCollections, discardCollection, fetchSingleRecord, checkWithdraw} = require('../controllers/collection')
+const {saveCollection, getAllCollections, discardCollection, fetchSingleRecord, checkWithdraw, withdrawCollection} = require('../controllers/collection')
 
 
 router.post('/saveCollection', saveCollection)
@@ -13,7 +13,7 @@ router.put('/discardCollection', discardCollection)
 
 router.post('/fetchSingleRecord', fetchSingleRecord)
 
-router.post('/withdraw', checkWithdraw)
+router.post('/withdraw', withdrawCollection)
 
 
 module.exports = router

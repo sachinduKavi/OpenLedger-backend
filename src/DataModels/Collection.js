@@ -189,6 +189,30 @@ class Collection {
         return collectionArray
     }
 
+    // Withdrawing collection 
+    async withdraw(totalAmount, treasuryID) {
+        // Fetch values from the database
+        await this.fetchSpecifRecord()
+        // Calculating collected amount 
+        let totalAmountDb = this.#treasuryAllocation
+        this.participantArray.forEach(element => {
+            totalAmountDb += element.paidAmount
+        });
+        if(totalAmount === totalAmountDb) {
+            // Proceed collection withdrawal 
+            const ledger = new LedgerRecord({title: "Collection Withdrawal", description: `Collection has been withdrawn by `, amount: totalAmount/-1, 
+                category: "Collection", treasuryID: treasuryID, createdDate: `${this.#publishedDate}#00:00`, 
+            })
+            await ledger.createNewRecord() // creating new record
+            await this.deleteCollection() // Delete the current collection 
+        } else {
+            // Unauthorize action detected
+            return false
+        }
+
+        return true
+    }
+
 
     // Delete the cashflow record from the database
     async deleteCollection() {
