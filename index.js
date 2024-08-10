@@ -11,6 +11,7 @@ const collectionRouter = require('./src/routes/collection')
 const transactionRouter = require('./src/routes/transaction')
 const announcementRouter = require('./src/routes/announcement')
 const commentRouter = require('./src/routes/comment')
+const messageRouter = require('./src/routes/message')
 
 const PORT = process.env.PORT || 3500
 
@@ -38,6 +39,8 @@ fleetApp.use('/transaction', transactionRouter)
 fleetApp.use('/announcement', announcementRouter)
 
 fleetApp.use('/comment', commentRouter)
+
+fleetApp.use('/message', messageRouter)
 
 
 

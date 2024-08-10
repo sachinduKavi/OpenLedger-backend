@@ -148,6 +148,16 @@ const getCommentID = async  () => {
         : generateID(commentID[0]['comment_ID'])
 }
 
+// Generate ID for any table
+const createID = async  (tableName, columnName, prefix) => {
+    const [commonID] = await conn.promise().query(`SELECT ${columnName} FROM ${tableName} ORDER BY ${columnName} DESC LIMIT 1`).catch(err => {
+        throw err
+    })
+    return (commonID.length == 0)
+        ? generateID(prefix)
+        : generateID(commonID[0][columnName])
+}
+
 
 module.exports = {
     getLastTreasuryID,
@@ -162,5 +172,6 @@ module.exports = {
     getCollectionID,
     getPaymentID,
     getAnnouncementID,
-    getCommentID
+    getCommentID,
+    createID
 }
