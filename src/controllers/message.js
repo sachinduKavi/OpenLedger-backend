@@ -1,4 +1,4 @@
-const {parseCookies} = require('../middleware/Cookies')
+const { parseCookies } = require('../middleware/Cookies')
 const { verifyToken } = require('../middleware/JWT')
 const Message = require('../DataModels/Message')
 
@@ -24,6 +24,7 @@ const newMessage = async (req, res) => {
         errorMessage: errorMessage
     }))
 }
+
 
 
 // Fetch 50 messages from the database
