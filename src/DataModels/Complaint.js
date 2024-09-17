@@ -1,5 +1,6 @@
 const conn = require('../SQL_Connection')
 const Evidence = require('./Evidence')
+const {sqlToStringDate} = require('../middleware/format')
 const {createID} = require('../middleware/generateID')
 
 class Complaint {
@@ -11,10 +12,12 @@ class Complaint {
     #caption
     #subject
     #status
+    #publisher
+    #dpLink
     #evidenceArray
     #evidenceLinkArray
 
-    constructor({complaintID = null, publishedDate = null, treasuryID = null, publisherID = null, anonymous = true, caption = null, subject = null, status = null, evidenceArray = [], evidenceLinkArray = []}) {
+    constructor({complaintID = null, publishedDate = null, treasuryID = null, publisherID = null, anonymous = true, caption = null, subject = null, status = null, evidenceArray = [], evidenceLinkArray = [], publisher = null, dpLink = null}) {
         this.#complaintID = complaintID
         this.#publishedDate = publishedDate
         this.#treasuryID = treasuryID
@@ -23,6 +26,8 @@ class Complaint {
         this.#caption = caption
         this.#subject = subject
         this.#status = status
+        this.#publisher = publisher
+        this.#dpLink = dpLink
         this.#evidenceLinkArray = evidenceLinkArray
         this.#evidenceArray = evidenceArray
     }
@@ -45,6 +50,28 @@ class Complaint {
     }
 
 
+    // Load all the complaints 
+    static async fetchComplaints(treasuryID) {
+        const [complaintResults] = await conn.promise().query(`SELECT complaint_ID, published_date, publisher_ID, user_name, anonymous, caption, subject, status, link FROM complaint JOIN user ON user_Id = publisher_ID JOIN image_ref ON display_picture = image_Id WHERE treasury_ID = ?`,[
+            treasuryID
+        ])
+
+        return complaintResults.map(element => {
+            return new Complaint({
+                complaintID: element.complaint_ID,
+                publishedDate: sqlToStringDate(element.published_date),
+                publisherID: element.publisher_ID,
+                publisher: element.user_name,
+                anonymous: element.anonymous,
+                caption: element.caption,
+                subject: element.subject,
+                status: element.status,
+                dpLink: element.link
+            })
+        })
+    }
+
+
     extractJSON() {
         return {
             complaintID: this.#complaintID,
@@ -55,6 +82,8 @@ class Complaint {
             caption: this.#caption,
             subject: this.#subject,
             status: this.#status,
+            publisher: this.#publisher,
+            dpLink: this.#dpLink,
             evidenceLinkArray: this.#evidenceLinkArray
         }
     }
@@ -62,6 +91,14 @@ class Complaint {
 
 
     // Getters
+    getPublisher() {
+        return this.#publisher
+    }
+
+    getDpLink() {
+        return this.#dpLink
+    }
+
     getEvidenceArray() {
         return this.#evidenceArray
     }
