@@ -52,7 +52,7 @@ class Complaint {
 
     // Load all the complaints 
     static async fetchComplaints(treasuryID) {
-        const [complaintResults] = await conn.promise().query(`SELECT complaint_ID, published_date, publisher_ID, user_name, anonymous, caption, subject, status, link FROM complaint JOIN user ON user_Id = publisher_ID JOIN image_ref ON display_picture = image_Id WHERE treasury_ID = ?`,[
+        const [complaintResults] = await conn.promise().query(`SELECT complaint_ID, published_date, publisher_ID, user_name, anonymous, caption, subject, status, link FROM complaint JOIN user ON user_Id = publisher_ID JOIN image_ref ON display_picture = image_Id WHERE treasury_ID = ? ORDER BY complaint_ID DESC`,[
             treasuryID
         ])
 
@@ -72,12 +72,14 @@ class Complaint {
                 subject: element.subject,
                 status: element.status,
                 dpLink: element.link,
-                evidenceArray: evidenceArray.map(element => {
-                    console.log('hello', element.extractJSON())
-                    return element.extractJSON()
+                evidenceArray: evidenceArray.map(elementEv => {
+                    return elementEv.extractJSON()
                 })
             }))
+
+            
         }
+
 
         return complaintArray
     }
@@ -95,6 +97,7 @@ class Complaint {
             status: this.#status,
             publisher: this.#publisher,
             dpLink: this.#dpLink,
+            evidenceArray: this.#evidenceArray,
             evidenceLinkArray: this.#evidenceLinkArray
         }
     }

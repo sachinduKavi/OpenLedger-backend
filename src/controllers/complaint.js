@@ -36,9 +36,12 @@ const loadComplaints = async (req, res) => {
     const [token, tokenError] = verifyToken(parseCookies(req).user_token)
     if(token) {
         const complaints = await Complaint.fetchComplaints(token.treasury_ID)
+        // console.log('hello', complaints[0].extractJSON())
         content = complaints.map(element => {
             return element.extractJSON()
         })
+
+        // console.log(content)
     } else {
         // Invalid token
         proceed = false
