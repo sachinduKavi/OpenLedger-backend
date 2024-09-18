@@ -56,8 +56,13 @@ class Complaint {
             treasuryID
         ])
 
-        return complaintResults.map(element => {
-            return new Complaint({
+        
+        const complaintArray = []
+        for(const element of complaintResults) {
+            const evidenceArray = await Evidence.fetchAllEvidence(element.complaint_ID)
+
+            complaintArray.push(
+            new Complaint({
                 complaintID: element.complaint_ID,
                 publishedDate: sqlToStringDate(element.published_date),
                 publisherID: element.publisher_ID,
@@ -66,9 +71,15 @@ class Complaint {
                 caption: element.caption,
                 subject: element.subject,
                 status: element.status,
-                dpLink: element.link
-            })
-        })
+                dpLink: element.link,
+                evidenceArray: evidenceArray.map(element => {
+                    console.log('hello', element.extractJSON())
+                    return element.extractJSON()
+                })
+            }))
+        }
+
+        return complaintArray
     }
 
 
