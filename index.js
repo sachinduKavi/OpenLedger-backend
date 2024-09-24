@@ -13,6 +13,7 @@ const announcementRouter = require('./src/routes/announcement')
 const commentRouter = require('./src/routes/comment')
 const messageRouter = require('./src/routes/message')
 const complaintRouter = require('./src/routes/complaint')
+const voteRouter = require('./src/routes/vote')
 
 const PORT = process.env.PORT || 3500
 
@@ -44,6 +45,8 @@ fleetApp.use('/comment', commentRouter)
 fleetApp.use('/message', messageRouter)
 
 fleetApp.use('/complaint', complaintRouter)
+
+fleetApp.use('/vote', voteRouter)
 
 
 
