@@ -277,6 +277,28 @@ const loadUserDetail = async (req, res) => {
     }))
 }
 
+// Update user details
+const updateUserDetails = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null // Process variables
+
+    const [token, errorToken] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const user = new User(req.body)
+        await user.updateUser()
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = errorToken
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+
+}
+
 
 // Get user details for userID
 const fetchUserDetails = async (req, res) => {
@@ -290,5 +312,6 @@ module.exports = {
     verificationCode,
     checkLogin,
     testingFunction,
-    loadUserDetail
+    loadUserDetail,
+    updateUserDetails
 }

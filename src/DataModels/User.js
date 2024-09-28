@@ -41,6 +41,12 @@ class User {
         }
     }
 
+    async updateUser() {
+        await conn.promise().query(`UPDATE user SET mobile_number = ?, signature = ?, about_me = ? WHERE user_Id = ?`, [
+            this.#mobileNumber??'', this.#userSignature?? '', this.#aboutMe?? '', this.#userID
+        ])
+    }
+
     
 
     getUserLevel() {
