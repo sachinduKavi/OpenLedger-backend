@@ -300,6 +300,31 @@ const updateUserDetails = async (req, res) => {
 }
 
 
+// Join request from a user
+const joinRequest = async (req, res) => {
+    console.log('joine request')
+    let proceed = true, errorMessage = null, content = null // Process variables
+
+
+    if(req.body.email !== undefined && req.body.password !== undefined) {
+        const user = new User({userEmail: req.body.email, passwordHash: req.body.password})
+        proceed = await user.authenticate(req.body.treasuryID)
+        if(!proceed) errorMessage = 'Invalid username or password'
+    } else {
+        proceed = false
+        errorMessage = 'Email & password could not be empty'
+    }
+    
+
+
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
 // Get user details for userID
 const fetchUserDetails = async (req, res) => {
     
@@ -313,5 +338,6 @@ module.exports = {
     checkLogin,
     testingFunction,
     loadUserDetail,
-    updateUserDetails
+    updateUserDetails,
+    joinRequest
 }

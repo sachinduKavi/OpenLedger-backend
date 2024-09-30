@@ -1,6 +1,8 @@
 const conn = require('../SQL_Connection')
 const jwt = require('jsonwebtoken')
 const {SECRET_KEY} = require('../middleware/KEYS')
+const bcrypt = require('bcryptjs')
+const { createID } = require('../middleware/generateID')
 class User {
     static position = 'User'
 
@@ -88,6 +90,24 @@ class User {
     // Generate json web token for the user ID
     createUserIDToken() {
         return jwt.sign({user_ID: this.#userID}, SECRET_KEY, { expiresIn: '6h' })
+    }
+
+    // Authenticate user 
+    async authenticate(treasuryID) {
+        const [results] = await conn.promise().query(`SELECT user_Id, user_name, password_hash FROM user WHERE user_email = ? Limit 1`, [this.#userEmail])
+        if(results.length > 0) {
+            if(bcrypt.compare(this.#passwordHash, results[0].password_hash)) {
+                // Password match
+                const requestID = await createID('member_request', 'request_ID', 'RQ00')
+                await conn.promise().query(`INSERT INTO member_request (request_ID, user_ID, treasury_ID) VALUES (?, ?, ?)`, [
+                    requestID, results[0].user_Id, treasuryID
+                ])
+
+                return true
+            }
+        }
+
+        return false
     }
 
 
