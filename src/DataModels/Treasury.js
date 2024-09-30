@@ -1,5 +1,6 @@
 const conn = require('../SQL_Connection')
 const {userCategorize} = require('../middleware/auth')
+const User = require('../DataModels/User')
 
 class Treasury {
     // Private Treasury variables
@@ -64,6 +65,18 @@ class Treasury {
             ownerID: this.#ownerID,
             currentBalance: this.#currentBalance
         }
+    }
+
+    // Remove a request 
+    async deleteRequest(requestID) {
+        await conn.promise().query(`DELETE FROM member_request WHERE request_ID = ?`, [requestID])
+    }
+
+    // Load request in the treasury
+    async loadRequest() {
+        console.log(this.#treasuryID)
+        const [requestResults] = await conn.promise().query(`SELECT request_ID, member_request.user_ID, user_name, user_email, link FROM member_request JOIN user ON member_request.user_ID = user.user_Id JOIN image_ref ON user.display_picture = image_ref.image_Id WHERE treasury_ID = ?`, [this.#treasuryID])
+        return requestResults
     }
 
     // Fetch all treasury participants from the database 

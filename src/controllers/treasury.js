@@ -8,6 +8,7 @@ const {getLastTreasuryID, getLastPictureID}  = require('../middleware/generateID
 const {verifyToken, signToken} = require('../middleware/JWT')
 
 const Treasurer = require('../DataModels/Treasurer')
+const { joinRequest } = require('./user')
 
 
 // Create new treasury step 01 
@@ -234,6 +235,48 @@ const getAllTreasuryParticipants = async (req, res) => {
     }))
 }
 
+
+const loadJoinRequest = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const treasury = new Treasury({treasuryID: token.treasury_ID})
+        content = await treasury.loadRequest()
+    } else {
+        proceed = false
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+
+}
+
+
+const deleteRequest = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const treasury = new Treasury({treasuryID: token.treasury_ID})
+        await treasury.deleteRequest(req.body.requestID)
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
  
 
 module.exports = {
@@ -242,5 +285,7 @@ module.exports = {
     verifyTreasury,
     getTreasuryData,
     updateTreasurySettings,
-    getAllTreasuryParticipants
+    getAllTreasuryParticipants,
+    loadJoinRequest,
+    deleteRequest
 }
