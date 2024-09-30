@@ -277,6 +277,27 @@ const deleteRequest = async (req, res) => {
     }))
 }
 
+
+const acceptRequest = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const treasury = new Treasury({treasuryID: token.treasury_ID})
+        await treasury.acceptsRequest(req.body.requestID)
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
  
 
 module.exports = {
@@ -287,5 +308,6 @@ module.exports = {
     updateTreasurySettings,
     getAllTreasuryParticipants,
     loadJoinRequest,
-    deleteRequest
+    deleteRequest,
+    acceptRequest
 }

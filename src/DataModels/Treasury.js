@@ -79,6 +79,23 @@ class Treasury {
         return requestResults
     }
 
+
+
+    // Accepts requests
+    async acceptsRequest(requestID) {
+        const [requestResults] = await conn.promise().query(`SELECT user_ID, treasury_ID FROM member_request WHERE request_ID =?`, [requestID])
+        try {
+            await conn.promise().query(`INSERT INTO treasury_participants (treasury_ID, user_ID, role) VALUES (?, ?, ?)`, [
+                requestResults.treasury_ID, requestResults.user_ID, 'Member'
+            ])
+        } catch(e) {
+
+        }
+
+        await this.deleteRequest(requestID)
+    }
+
+
     // Fetch all treasury participants from the database 
     // Assign them to relative objects 
     async getAllTreasuryParticipants() {
