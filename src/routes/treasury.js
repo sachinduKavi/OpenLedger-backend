@@ -1,7 +1,7 @@
 const Router = require('../../custom_package/Route')
 const router = new Router() // New router instant
 
-const { createTreasury, getParticipantTreasury, verifyTreasury, getTreasuryData, updateTreasurySettings, getAllTreasuryParticipants, loadJoinRequest, deleteRequest, acceptRequest } = require('../controllers/treasury')
+const { createTreasury, getParticipantTreasury, verifyTreasury, getTreasuryData, updateTreasurySettings, getAllTreasuryParticipants, loadJoinRequest, deleteRequest, acceptRequest, promoteDemoteMember, searchKeyWords } = require('../controllers/treasury')
 
 
 
@@ -22,5 +22,9 @@ router.get('/loadJoinRequest', loadJoinRequest)
 router.put('/deleteRequest', deleteRequest)
 
 router.put('/acceptRequest', acceptRequest)
+
+router.put('/promoteDemoteMember', promoteDemoteMember)
+
+router.post('/searchKeywords', searchKeyWords)
 
 module.exports = router

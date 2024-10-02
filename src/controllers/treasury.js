@@ -9,6 +9,7 @@ const {verifyToken, signToken} = require('../middleware/JWT')
 
 const Treasurer = require('../DataModels/Treasurer')
 const { joinRequest } = require('./user')
+const User = require('../DataModels/User')
 
 
 // Create new treasury step 01 
@@ -35,7 +36,7 @@ const createTreasury = async (req, res) => {
 ;
     const treasuryID = await getLastTreasuryID()
     // Create treasury Link
-    const treasuryLink = `https://conciliatory-senses.000webhostapp.com/open_ledger/open_ledgerBack.php?treasury=${btoa(treasuryID)}`
+    const treasuryLink = `http://localhost:5173/request/${btoa(treasuryID)}`
 
     // New treasury instant
     const treasury = new Treasury(
@@ -298,6 +299,49 @@ const acceptRequest = async (req, res) => {
     }))
 }
 
+
+const promoteDemoteMember = async (req, res) => {
+    console.log('promote')
+    let respond = {
+        proceed: true,
+        errorMessage: null,
+        content: null
+    }
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const treasury = new Treasury({treasuryID: token.treasury_ID, ownerID: token.user_ID})
+        respond = {...respond, ...await treasury.promoteMemberDemote(req.body.memberID, req.body.promoteState)}
+    } else {
+        proceed = false
+        errorMessage = tokenError
+
+    }
+
+    res.end(JSON.stringify(respond))
+}
+
+
+const searchKeyWords = async (req, res) => {
+    let proceed = true, errorMessage = null, content = null
+    // Verify user token 
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const user = new User({userID: token.user_ID})
+        content = await user.searchKeywords(req.body.keywords)
+    } else {
+        // Invalid token
+        proceed = false
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+
  
 
 module.exports = {
@@ -309,5 +353,7 @@ module.exports = {
     getAllTreasuryParticipants,
     loadJoinRequest,
     deleteRequest,
-    acceptRequest
+    acceptRequest,
+    promoteDemoteMember,
+    searchKeyWords
 }

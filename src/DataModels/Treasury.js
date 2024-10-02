@@ -80,16 +80,63 @@ class Treasury {
     }
 
 
+    // Promote a member 
+    async promoteMemberDemote(memberID, promoteState) {
+        const userLevel = [
+            'Member',
+            'CoTreasurer',
+            'Chair'
+        ]
+        // Check whether user is treasurer 
+        const [checkResult] = await conn.promise().query(`SELECT role FROM treasury_participants WHERE treasury_Id = ? AND user_Id = ?`, [
+            this.#treasuryID, this.#ownerID
+        ])
+        if(checkResult.length > 0 && checkResult[0].role === 'Treasurer') {
+            const [currentPositionResults] = await conn.promise().query(`SELECT role FROM treasury_participants WHERE treasury_Id = ? AND user_Id = ?`, [
+                this.#treasuryID, memberID
+            ])
+
+            let currentLevel = userLevel.findIndex(item => item === currentPositionResults[0].role)
+            if(promoteState) {currentLevel++}
+            else {currentLevel--}
+
+        
+            if(currentLevel > -1 && currentLevel < 3) {
+                await conn.promise().query(`UPDATE treasury_participants SET role = ? WHERE treasury_Id = ? AND user_Id = ?`, [
+                    userLevel[currentLevel], this.#treasuryID, memberID
+                ])
+
+                return {
+                    proceed: true,
+                    content: userLevel[currentLevel]
+                }
+            } else {
+                return {
+                    proceed: false,
+                    errorMessage: 'Out of bound',
+                    content: currentPositionResults[0].role
+                }
+            }
+        } else {
+            return {
+                proceed: false,
+                errorMessage: 'Not authorize action',
+                content: currentPositionResults[0].role 
+            }
+        }
+    }
+
 
     // Accepts requests
     async acceptsRequest(requestID) {
-        const [requestResults] = await conn.promise().query(`SELECT user_ID, treasury_ID FROM member_request WHERE request_ID =?`, [requestID])
+        const [requestResults] = await conn.promise().query(`SELECT user_ID, treasury_ID FROM member_request WHERE request_ID = ?`, [requestID])
+
         try {
             await conn.promise().query(`INSERT INTO treasury_participants (treasury_ID, user_ID, role) VALUES (?, ?, ?)`, [
-                requestResults.treasury_ID, requestResults.user_ID, 'Member'
+                requestResults[0].treasury_ID, requestResults[0].user_ID, 'Member'
             ])
         } catch(e) {
-
+            console.log(e)
         }
 
         await this.deleteRequest(requestID)

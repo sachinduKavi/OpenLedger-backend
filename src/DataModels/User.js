@@ -49,6 +49,13 @@ class User {
         ])
     }
 
+
+    // User search for treasury
+    async searchKeywords(keywords) {
+        const [results] = await conn.promise().query(`SELECT treasury_Id, treasury_name, global_visibility FROM treasury WHERE UPPER(treasury_name) LIKE ? AND global_visibility = '1' LIMIT 8`, [`%${keywords.toUpperCase()}%`])
+        return results
+    }
+
     
 
     getUserLevel() {
