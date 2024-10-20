@@ -73,4 +73,18 @@ const conn = mysql.createConnection({
 //     database: 'sql3721986'
 // })
 
+
+
+// Host: sql12.freesqldatabase.com
+// Database name: sql12.freesqldatabase.com
+// Database user: sql12739302
+// Database password: zQJDpPfqgH
+// Port number: 3306
+
+// const conn = mysql.createConnection({
+//         host: 'sql12.freesqldatabase.com',
+//         user: 'sql12739302',
+//         password: 'zQJDpPfqgH',
+//         database: 'sql12739302'
+//     })
 module.exports = conn
