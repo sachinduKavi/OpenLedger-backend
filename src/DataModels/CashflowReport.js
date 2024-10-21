@@ -181,6 +181,11 @@ class CashflowReportModel {
     }
 
 
+    async discardDocument() {
+        await conn.promise().query('DELETE FROM cashflow_report WHERE cashflow_reportID = ?', [this.#reportID])
+    }
+
+
     // Getters and Setters
     getSignatureArray() {
         return this.#signatureArray

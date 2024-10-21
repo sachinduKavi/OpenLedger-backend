@@ -86,9 +86,38 @@ const getCashflowReport = async (req, res) => {
 }
 
 
+const discardCashflow = async (req, res) => {
+    console.log('function working...')
+    let proceed = true, content = null, errorMessage = null
+
+    // Verify token
+    const [token, tokenError] = verifyToken(parseCookies(req).user_token)
+    if(token) {
+        const cashflow = new CashflowReportModel({reportID: req.body.reportID}) // Creating new cashflow instant
+        try {
+            await cashflow.discardDocument()
+        } catch(e) {
+            console.log(e)
+            proceed = false
+        }
+        
+    } else {
+        // Invalid token 
+        proceed = false 
+        errorMessage = tokenError
+    }
+
+    res.end(JSON.stringify({
+        proceed: proceed,
+        errorMessage: errorMessage,
+        content: content
+    }))
+}
+ 
 
 module.exports = {
     saveCashflowReport,
     loadAllCashflow,
-    getCashflowReport
+    getCashflowReport,
+    discardCashflow
 }
